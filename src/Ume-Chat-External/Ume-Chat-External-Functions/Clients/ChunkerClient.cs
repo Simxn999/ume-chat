@@ -150,7 +150,7 @@ public class ChunkerClient
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            _logger.LogError(e, "Failed retrieval of token count!");
             throw;
         }
     }
