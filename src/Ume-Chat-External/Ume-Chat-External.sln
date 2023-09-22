@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-External-Functions", "Ume-Chat-External-Functions\Ume-Chat-External-Functions.csproj", "{FF12476E-0F90-43D2-BC17-B25B29427A5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-External-API", "Ume-Chat-External-API\Ume-Chat-External-API.csproj", "{8F9A6A8C-8BEA-4F71-B692-485512DAD2AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-External-General", "Ume-Chat-External-General\Ume-Chat-External-General.csproj", "{FF5AEEFB-A86C-43DF-895A-D6D7BCA20004}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF12476E-0F90-43D2-BC17-B25B29427A5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF12476E-0F90-43D2-BC17-B25B29427A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF12476E-0F90-43D2-BC17-B25B29427A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF12476E-0F90-43D2-BC17-B25B29427A5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F9A6A8C-8BEA-4F71-B692-485512DAD2AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F9A6A8C-8BEA-4F71-B692-485512DAD2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F9A6A8C-8BEA-4F71-B692-485512DAD2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F9A6A8C-8BEA-4F71-B692-485512DAD2AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FF5AEEFB-A86C-43DF-895A-D6D7BCA20004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF5AEEFB-A86C-43DF-895A-D6D7BCA20004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF5AEEFB-A86C-43DF-895A-D6D7BCA20004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF5AEEFB-A86C-43DF-895A-D6D7BCA20004}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
