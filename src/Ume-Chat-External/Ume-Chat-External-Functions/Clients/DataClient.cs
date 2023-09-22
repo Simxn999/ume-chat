@@ -129,19 +129,6 @@ public class DataClient
         }
     }
 
-    private async Task<IEnumerable<CrawledWebpage>> CrawlSitemapItemsAsync(IList<SitemapItem> sitemapItems)
-    {
-        try
-        {
-            return await CrawlerClient.CrawlSitemapItemsAsync(sitemapItems);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed crawling sitemap items!");
-            throw;
-        }
-    }
-
     private async Task RunBatches(List<List<SitemapItem>> batches)
     {
         _logger.LogInformation($"Running {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}...", batches.Count);
@@ -166,7 +153,7 @@ public class DataClient
 
         try
         {
-            var webpages = (await CrawlSitemapItemsAsync(batch)).ToList();
+            var webpages = (await CrawlerClient.CrawlSitemapItemsAsync(batch)).ToList();
 
             var documents = ChunkerClient.ChunkCrawledWebpages(webpages);
             documents = await OpenAIEmbeddingsClient.RetrieveEmbeddingsAsync(documents);
