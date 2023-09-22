@@ -62,7 +62,7 @@ public class CrawlerClient
     {
         try
         {
-            Browser = await GetBrowser();
+            Browser = await GetBrowserAsync();
             TitleSuffix = Variables.Get("CRAWLER_TITLE_SUFFIX");
         }
         catch (Exception e)
@@ -73,6 +73,7 @@ public class CrawlerClient
     }
 
     private async Task<IBrowser> GetBrowser()
+    private async Task<IBrowser> GetBrowserAsync()
     {
         try
         {
