@@ -7,6 +7,9 @@ using Ume_Chat_External_General.Models.Functions.Sitemap;
 
 namespace Ume_Chat_External_Functions.Clients;
 
+/// <summary>
+///     Client for synchronizing data between website & database.
+/// </summary>
 [DebuggerDisplay("{IndexClient.Index}")]
 public class DataClient
 {
@@ -17,15 +20,51 @@ public class DataClient
         _logger = logger;
     }
 
+    /// <summary>
+    ///     Client for handling database/index.
+    /// </summary>
     private IndexClient IndexClient { get; set; } = default!;
+
+    /// <summary>
+    ///     List of documents inside of the database/index.
+    /// </summary>
     private List<Document> Index { get; set; } = default!;
+
+    /// <summary>
+    ///     Sitemap of website.
+    /// </summary>
     private Sitemap Sitemap { get; set; } = default!;
+
+    /// <summary>
+    ///     Relevant items from the sitemap.
+    /// </summary>
     private List<SitemapItem> SitemapItems { get; set; } = default!;
+
+    /// <summary>
+    ///     Client for chunking webpage content.
+    /// </summary>
     private ChunkerClient ChunkerClient { get; set; } = default!;
+
+    /// <summary>
+    ///     Client for crawling webpages.
+    /// </summary>
     private CrawlerClient CrawlerClient { get; set; } = default!;
+
+    /// <summary>
+    ///     Client for handling embeddings.
+    /// </summary>
     private OpenAIEmbeddingsClient OpenAIEmbeddingsClient { get; set; } = default!;
+
+    /// <summary>
+    ///     Size of batches.
+    /// </summary>
     private int BatchSize { get; set; }
 
+    /// <summary>
+    ///     Create DataClient and initialize properties asynchronously.
+    /// </summary>
+    /// <param name="logger">ILogger</param>
+    /// <returns>DataClient</returns>
     public static async Task<DataClient> CreateAsync(ILogger logger)
     {
         try
@@ -42,6 +81,9 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Synchronize data between website & database.
+    /// </summary>
     public async Task SynchronizeAsync()
     {
         _logger.LogInformation("Synchronizing database with sitemap...");
@@ -69,6 +111,9 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Initialize properties asynchronously.
+    /// </summary>
     private async Task InitializeAsync()
     {
         try
@@ -90,6 +135,10 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Retrieve the sitemap items that are outdated in the database.
+    /// </summary>
+    /// <returns>List of sitemap items to update</returns>
     private List<SitemapItem> GetSitemapItemsToUpdate()
     {
         _logger.LogInformation("Retrieving items from sitemap to update...");
@@ -97,8 +146,13 @@ public class DataClient
         {
             var sitemapItems = SitemapItems.Where(i =>
                                                   {
+                                                      // Retrieve document from database
                                                       var document = Index.FirstOrDefault(d => d.URL == i.URL);
 
+                                                      // Sitemap item should be updated if:
+                                                      //    Document.URL does not exist in database
+                                                      //        OR
+                                                      //    Webpage has been updated since it was uploaded to database
                                                       return document is null || document.LastModified < i.LastModified;
                                                   }).ToList();
 
@@ -112,6 +166,11 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Split sitemap itemes into batches of [BatchSize] size.
+    /// </summary>
+    /// <param name="list">Enumerable to batch</param>
+    /// <returns>List of lists of sitemap items</returns>
     private List<List<SitemapItem>> Batch(IEnumerable<SitemapItem> list)
     {
         _logger.LogInformation("Batching sitemap items...");
@@ -129,6 +188,10 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Execute batches.
+    /// </summary>
+    /// <param name="batches">Batches/List of lists of sitemap items to execute</param>
     private async Task RunBatches(List<List<SitemapItem>> batches)
     {
         _logger.LogInformation($"Running {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}...", batches.Count);
@@ -147,15 +210,25 @@ public class DataClient
         }
     }
 
+    /// <summary>
+///     Execute batch.
+    /// </summary>
+    /// <param name="batch">Batch/List of sitemap items to execute.</param>
+    /// <param name="index">Current index of batch in batches</param>
+    /// <param name="total">Total number of batches</param>
     private async Task RunBatch(IList<SitemapItem> batch, int index, int total)
     {
         _logger.LogInformation($"{new ProgressString(index, total)} Running batch...");
 
         try
         {
+            // Crawling
             var webpages = (await CrawlerClient.CrawlSitemapItemsAsync(batch)).ToList();
 
+            // Chunking
             var documents = ChunkerClient.ChunkCrawledWebpages(webpages);
+
+            // Embeddings
             documents = await OpenAIEmbeddingsClient.RetrieveEmbeddingsAsync(documents);
 
             var documentsToDelete = GetOutdatedDocumentsFromBatch(batch);
@@ -172,6 +245,11 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Retrieve documents from database that should be deleted because of update.
+    /// </summary>
+    /// <param name="batch">Batch to filter</param>
+    /// <returns>List of outdated documents</returns>
     private List<Document> GetOutdatedDocumentsFromBatch(ICollection<SitemapItem> batch)
     {
         _logger.LogInformation("Retrieving outdated documents from batch...");
@@ -189,6 +267,11 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Retrieve documents that don't exist in the sitemap.
+    ///     In other words, documents with webpages that no longer exist.
+    /// </summary>
+    /// <returns>List of documents that should no longer exist</returns>
     private List<Document> GetInvalidDocuments()
     {
         _logger.LogInformation("Retrieving invalid documents...");
@@ -206,6 +289,10 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Delete documents from database.
+    /// </summary>
+    /// <param name="documents">Documents to delete</param>
     private async Task DeleteDocumentsAsync(ICollection<Document> documents)
     {
         _logger.LogInformation($"Deleting {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...", documents.Count);
@@ -224,6 +311,10 @@ public class DataClient
         }
     }
 
+    /// <summary>
+    ///     Upload documents to database.
+    /// </summary>
+    /// <param name="documents">Documents to upload</param>
     private async Task UploadDocumentsAsync(ICollection<Document> documents)
     {
         _logger.LogInformation($"Uploading {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...", documents.Count);

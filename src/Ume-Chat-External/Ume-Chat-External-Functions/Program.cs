@@ -15,6 +15,7 @@ var host = new HostBuilder()
                                          if (context.HostingEnvironment.IsDevelopment())
                                              builder.AddJsonFile("appsettings.Development.json", true);
 
+                                         // Configure Key Vault from appsettings 
                                          builder.AddAzureKeyVaultWithReferenceSupport();
                                      })
           .Build();

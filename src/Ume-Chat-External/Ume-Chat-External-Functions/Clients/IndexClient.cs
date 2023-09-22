@@ -9,6 +9,9 @@ using Ume_Chat_External_General.Models.Functions;
 
 namespace Ume_Chat_External_Functions.Clients;
 
+/// <summary>
+///     Client for handling the database/index.
+/// </summary>
 [DebuggerDisplay("{Index}")]
 public class IndexClient
 {
@@ -34,11 +37,31 @@ public class IndexClient
         }
     }
 
+    /// <summary>
+    /// URL to database/index.
+    /// </summary>
     private string URL { get; }
+    
+    /// <summary>
+    /// Key to database/index.
+    /// </summary>
     private string Key { get; }
+    
+    /// <summary>
+    /// Name of database/index.
+    /// </summary>
     private string Index { get; }
+    
+    /// <summary>
+    /// Client for handling the database/index.
+    /// </summary>
     private SearchClient SearchClient { get; }
 
+    /// <summary>
+    /// Send action to database with documents.
+    /// </summary>
+    /// <param name="documents">Documents to action</param>
+    /// <param name="action">Action for database</param>
     public async Task IndexDocumentsAsync(IEnumerable<Document> documents, Func<Document, IndexDocumentsAction<Document>> action)
     {
         try
@@ -54,6 +77,11 @@ public class IndexClient
         }
     }
 
+    /// <summary>
+    /// Retrieve documents from database with optional filter.
+    /// </summary>
+    /// <param name="filter">Optional: Documents filter</param>
+    /// <returns>Enumerable of documents from database</returns>
     public async Task<IEnumerable<Document>> GetDocumentsAsync(string? filter = null)
     {
         var documentsCount = await GetDocumentsCountAsync();
@@ -79,6 +107,10 @@ public class IndexClient
         }
     }
 
+    /// <summary>
+    /// Retrieve documents from database with only necessary fields.
+    /// </summary>
+    /// <returns>List of documents from database</returns>
     public async Task<List<Document>> GetDocumentsForComparisonAsync()
     {
         var documentsCount = await GetDocumentsCountAsync();
@@ -88,6 +120,7 @@ public class IndexClient
         {
             var options = new SearchOptions
                           {
+                              // Necessary fields
                               Select = { "id", "url", "title", "lastmod", "chunk_id" },
                               Size = documentsCount
                           };
@@ -103,6 +136,10 @@ public class IndexClient
         }
     }
 
+    /// <summary>
+    /// Retrieve the total amount of documents inside of database/index.
+    /// </summary>
+    /// <returns>Integer of amount of documents in index</returns>
     public async Task<int> GetDocumentsCountAsync()
     {
         try
