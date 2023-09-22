@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace Ume_Chat_External_General.Models.API.Response;
 
+/// <summary>
+///     Citation data transfer object
+/// </summary>
 [DebuggerDisplay("{Title}")]
 public class ResponseCitation
 {

@@ -3,6 +3,9 @@ using System.Xml.Serialization;
 
 namespace Ume_Chat_External_General.Models.Functions.Sitemap;
 
+/// <summary>
+///     Sitemap items from sitemap.
+/// </summary>
 [DebuggerDisplay("{URL}")]
 public class SitemapItem
 {
