@@ -7,17 +7,30 @@ using Ume_Chat_External_General.Models.API.Response;
 
 namespace Ume_Chat_External_API;
 
+/// <summary>
+///     Data manager for API requests.
+/// </summary>
 public static class DataManager
 {
+    /// <summary>
+    ///     Request a response from the assistant based on the messages provided.
+    /// </summary>
+    /// <param name="context">HttpContext used for streaming the response</param>
+    /// <param name="messages">Messages</param>
+    /// <param name="stream">If response should be streaming or not</param>
+    /// <returns>Assistant answer with citations</returns>
     public static async Task<IResult> ChatAsync(HttpContext context, List<RequestMessage> messages, bool stream)
     {
         try
         {
+            // Parse request input and populate with system message
             var chatMessages = OpenAIChatClient.GetChatMessages(messages);
 
             if (!stream)
+                // Not streaming response
                 return Results.Ok(await GetChatResponseAsync(chatMessages));
 
+            // Streaming response
             await GetChatResponseStreamingAsync(context, chatMessages);
 
             return Results.Empty;
@@ -28,6 +41,11 @@ public static class DataManager
         }
     }
 
+    /// <summary>
+    ///     Request a response from the assistant based on the messages provided.
+    /// </summary>
+    /// <param name="messages">Messages</param>
+    /// <returns>Assistant answer with citations</returns>
     private static async Task<ChatResponse> GetChatResponseAsync(IEnumerable<ChatMessage> messages)
     {
         var chatResponse = await OpenAIChatClient.SendChatRequestAsync(messages);
@@ -37,17 +55,30 @@ public static class DataManager
         return chatResponse;
     }
 
+    /// <summary>
+    ///     Request a streaming response from the assistant based on the messages provided.
+    /// </summary>
+    /// <param name="context">HttpContext used for streaming the response</param>
+    /// <param name="messages">Messages</param>
     private static async Task GetChatResponseStreamingAsync(HttpContext context, IEnumerable<ChatMessage> messages)
     {
         context.Response.Headers.Add("Content-Type", "text/event-stream");
 
         var chunks = await OpenAIChatClient.SendChatRequestStreamingAsync(messages);
-        var completeChatResponse = new ChatResponseExtended();
         await using var writer = new StreamWriter(context.Response.Body);
+        var completeChatResponse = new ChatResponseExtended();
+        var jsonOptions = new JsonSerializerOptions
+                          {
+                              Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+                          };
 
+        // Writes chunks to response & compiles a complete response object
         await foreach (var chunk in chunks)
         {
-            var chunkChatResponse = await WriteChunkToStreamAsync(chunk, writer);
+            // Write chunk to response
+            var chunkChatResponse = await WriteChunkToStreamAsync(chunk, writer, jsonOptions);
+
+            // Compile complete chat response
 
             if (chunkChatResponse.Citations is not null)
                 completeChatResponse.Citations?.AddRange(chunkChatResponse.Citations);
@@ -56,43 +87,64 @@ public static class DataManager
                 completeChatResponse.Message += chunkChatResponse.Message;
         }
 
+        // Indicate end of stream
         await WriteEndToStreamAsync(writer);
 
+        // Clean up compiled chat response
         completeChatResponse.RemoveUnusedCitations();
         completeChatResponse.NumberCitations();
 
-        await WriteObjectToStreamAsync(completeChatResponse, writer);
+        // Write compiled chat response
+        await WriteObjectToStreamAsync(completeChatResponse, writer, jsonOptions);
     }
 
-    private static async Task<ChatResponse> WriteChunkToStreamAsync(ChatMessage chunk, TextWriter writer)
+    /// <summary>
+    ///     Writes a message chunk to the response.
+    /// </summary>
+    /// <param name="chunk">Message to write</param>
+    /// <param name="writer">Writer</param>
+    /// <param name="jsonOptions">JsonSerializerOptions</param>
+    /// <returns>Assistant answer chunk with citations</returns>
+    private static async Task<ChatResponse> WriteChunkToStreamAsync(ChatMessage chunk, TextWriter writer, JsonSerializerOptions jsonOptions)
     {
         var chatResponse = new ChatResponseExtended(chunk);
 
         if (chatResponse.Message is null && chatResponse.Citations is null)
             return chatResponse;
 
-        await WriteObjectToStreamAsync(chatResponse, writer);
+        await WriteObjectToStreamAsync(chatResponse, writer, jsonOptions);
 
         return chatResponse;
     }
 
-    private static async Task WriteObjectToStreamAsync(object @object, TextWriter writer)
+    /// <summary>
+    ///     Writes an object to the response.
+    /// </summary>
+    /// <param name="object">Object to write</param>
+    /// <param name="writer">Writer</param>
+    /// <param name="jsonOptions">JsonSerializerOptions</param>
+    private static async Task WriteObjectToStreamAsync(object @object, TextWriter writer, JsonSerializerOptions jsonOptions)
     {
-        var jsonOptions = new JsonSerializerOptions
-                          {
-                              Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-                          };
         var jsonString = JsonSerializer.Serialize(@object, jsonOptions);
 
         await writer.WriteAsync(GetDataString(jsonString));
         await writer.FlushAsync();
     }
 
+    /// <summary>
+    ///     Retrieve properly formated datastream string.
+    /// </summary>
+    /// <param name="content">Data content</param>
+    /// <returns>Properly formatted datastream</returns>
     private static string GetDataString(string content)
     {
         return $"data: {content}\n\n";
     }
 
+    /// <summary>
+    ///     Write to response that the stream is finished.
+    /// </summary>
+    /// <param name="writer">Writer</param>
     private static async Task WriteEndToStreamAsync(TextWriter writer)
     {
         await writer.WriteAsync(GetDataString("[DONE]"));
