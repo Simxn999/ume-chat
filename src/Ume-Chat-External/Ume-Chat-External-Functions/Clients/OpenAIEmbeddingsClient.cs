@@ -25,7 +25,7 @@ public class OpenAIEmbeddingsClient
 
             OpenAIURL = Variables.Get("OPENAI_URL");
             EmbeddingsDeployment = Variables.Get("OPENAI_EMBEDDINGS_DEPLOYMENT");
-            EmbeddingsBatchSize = int.Parse(Variables.Get("OPENAI_EMBEDDINGS_BATCH_SIZE"));
+            EmbeddingsBatchSize = Variables.GetInt("OPENAI_EMBEDDINGS_BATCH_SIZE");
 
             Client = new OpenAIClient(new Uri(OpenAIURL), new AzureKeyCredential(OpenAIAPIKey));
         }

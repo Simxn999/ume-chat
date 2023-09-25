@@ -38,12 +38,12 @@ public static class OpenAIChatClient
     ///     1.0 = Diverse and creative responses.
     ///     2.0 = Absolute gibberish
     /// </summary>
-    private static float Temperature { get; } = float.Parse(Variables.Get("API_CHAT_REQUEST_TEMPERATURE"));
+    private static float Temperature { get; } = Variables.GetFloat("API_CHAT_REQUEST_TEMPERATURE");
 
     /// <summary>
     ///     Maximum amount of tokens allowed per call.
     /// </summary>
-    private static int MaxTokens { get; } = int.Parse(Variables.Get("API_CHAT_REQUEST_MAX_TOKENS"));
+    private static int MaxTokens { get; } = Variables.GetInt("API_CHAT_REQUEST_MAX_TOKENS");
 
     /// <summary>
     ///     Endpoint to Azure OpenAI Embedding deployment.

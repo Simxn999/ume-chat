@@ -126,7 +126,7 @@ public class DataClient
             Index = await IndexClient.GetDocumentsForComparisonAsync();
             Sitemap = await sitemapper.GetSitemapAsync();
             SitemapItems = sitemapper.GetPages(Sitemap);
-            BatchSize = int.Parse(Variables.Get("DATA_SYNCHRONIZATION_BATCH_SIZE"));
+            BatchSize = Variables.GetInt("DATA_SYNCHRONIZATION_BATCH_SIZE");
         }
         catch (Exception e)
         {

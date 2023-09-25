@@ -19,8 +19,8 @@ public class ChunkerClient
         {
             _logger = logger;
 
-            ChunkOverlap = int.Parse(Variables.Get("CHUNK_OVERLAP_SIZE"));
-            ChunkSize = int.Parse(Variables.Get("CHUNK_SIZE")) - ChunkOverlap;
+            ChunkOverlap = Variables.GetInt("CHUNK_OVERLAP_SIZE");
+            ChunkSize = Variables.GetInt("CHUNK_SIZE") - ChunkOverlap;
             TokenizerEncodingModel = Variables.Get("TOKENIZER_ENCODING_MODEL");
             ExternalLinkTooltip = Variables.Get("EXTERNAL_LINK_TOOLTIP");
             Tokenizer = GptEncoding.GetEncoding(TokenizerEncodingModel);
