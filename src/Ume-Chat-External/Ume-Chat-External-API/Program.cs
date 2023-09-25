@@ -12,10 +12,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IValidator<List<RequestMessage>>, RequestMessagesValidator>();
 
 builder.Configuration.AddAzureKeyVaultWithReferenceSupport();
+builder.Configuration.AddVariables();
 
 var app = builder.Build();
-
-Variables.Initialize(app.Configuration);
 
 if (app.Environment.IsDevelopment())
 {

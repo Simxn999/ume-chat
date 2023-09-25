@@ -12,13 +12,13 @@ public static class Variables
     private static ILogger? _logger;
 
     /// <summary>
-    ///     Initialize class with app configuration.
+    ///     Add variable support to ConfigurationBuilder.
     /// </summary>
-    /// <param name="configuration">App configuration</param>
+    /// <param name="builder">App configuration builder</param>
     /// <param name="logger">ILogger</param>
-    public static void Initialize(IConfiguration configuration, ILogger? logger = null)
+    public static void AddVariables(this IConfigurationBuilder builder, ILogger? logger = null)
     {
-        _configuration = configuration;
+        _configuration = builder.Build();
         _logger = logger;
     }
 

@@ -17,10 +17,9 @@ var host = new HostBuilder()
 
                                          // Configure Key Vault from appsettings 
                                          builder.AddAzureKeyVaultWithReferenceSupport();
+
+                                         builder.AddVariables();
                                      })
           .Build();
-
-var config = host.Services.GetRequiredService<IConfiguration>();
-Variables.Initialize(config);
 
 host.Run();
