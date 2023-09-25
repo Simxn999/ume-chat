@@ -4,7 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Ume_Chat_External_General;
 using Ume_Chat_KeyVaultProvider;
 
-var host = new HostBuilder() 
+var host = new HostBuilder()
           .ConfigureFunctionsWorkerDefaults(builder => builder.Services.AddLogging())
           .ConfigureAppConfiguration((context, builder) =>
                                      {

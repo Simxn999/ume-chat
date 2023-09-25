@@ -211,7 +211,7 @@ public class DataClient
     }
 
     /// <summary>
-///     Execute batch.
+    ///     Execute batch.
     /// </summary>
     /// <param name="batch">Batch/List of sitemap items to execute.</param>
     /// <param name="index">Current index of batch in batches</param>

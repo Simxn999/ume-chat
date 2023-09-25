@@ -8,7 +8,7 @@ using Ume_Chat_External_General.Models.Functions;
 namespace Ume_Chat_External_Functions.Clients;
 
 /// <summary>
-/// Client for handling embeddings.
+///     Client for handling embeddings.
 /// </summary>
 [DebuggerDisplay("{OpenAIURL}")]
 public class OpenAIEmbeddingsClient
@@ -37,33 +37,33 @@ public class OpenAIEmbeddingsClient
     }
 
     /// <summary>
-    /// Key to Azure OpenAI Service.
+    ///     Key to Azure OpenAI Service.
     /// </summary>
     private string OpenAIAPIKey { get; }
-    
+
     /// <summary>
-    /// URL to Azure OpenAI Service.
+    ///     URL to Azure OpenAI Service.
     /// </summary>
     private string OpenAIURL { get; }
-    
+
     /// <summary>
-    /// Azure OpenAI embeddings deployment.
+    ///     Azure OpenAI embeddings deployment.
     /// </summary>
     private string EmbeddingsDeployment { get; }
-    
+
     /// <summary>
-    /// Embeddings request batch limit.
-    /// 2023-09-22: 16
+    ///     Embeddings request batch limit.
+    ///     2023-09-22: 16
     /// </summary>
     private int EmbeddingsBatchSize { get; }
-    
+
     /// <summary>
-    /// Client for handling requests to OpenAI Service.
+    ///     Client for handling requests to OpenAI Service.
     /// </summary>
     private OpenAIClient Client { get; }
 
     /// <summary>
-    /// Populate documents with embeddings based on it's content.
+    ///     Populate documents with embeddings based on it's content.
     /// </summary>
     /// <param name="documents">Documents to populate embeddings</param>
     /// <returns>List of documents populated with embeddings</returns>
@@ -74,7 +74,7 @@ public class OpenAIEmbeddingsClient
         try
         {
             var output = new List<Document>();
-            
+
             // Group documents by URL
             var urlGroups = documents.GroupBy(d => d.URL, d => d).ToList();
 
@@ -99,7 +99,7 @@ public class OpenAIEmbeddingsClient
     }
 
     /// <summary>
-    /// Populate a webpage's documents with embedding based on it's content.
+    ///     Populate a webpage's documents with embedding based on it's content.
     /// </summary>
     /// <param name="documents">Webpage's documents to populate with embeddings</param>
     /// <param name="index">Current index of webpage</param>
@@ -114,7 +114,7 @@ public class OpenAIEmbeddingsClient
         try
         {
             var embeddings = new List<EmbeddingItem>();
-            
+
             // Batch documents based on [EmbeddingsBatchSize]
             var batches = documents.Chunk(EmbeddingsBatchSize).Select(c => c.Select(d => d.Content));
 

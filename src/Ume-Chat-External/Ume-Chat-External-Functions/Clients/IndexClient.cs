@@ -38,27 +38,27 @@ public class IndexClient
     }
 
     /// <summary>
-    /// URL to database/index.
+    ///     URL to database/index.
     /// </summary>
     private string URL { get; }
-    
+
     /// <summary>
-    /// Key to database/index.
+    ///     Key to database/index.
     /// </summary>
     private string Key { get; }
-    
+
     /// <summary>
-    /// Name of database/index.
+    ///     Name of database/index.
     /// </summary>
     private string Index { get; }
-    
+
     /// <summary>
-    /// Client for handling the database/index.
+    ///     Client for handling the database/index.
     /// </summary>
     private SearchClient SearchClient { get; }
 
     /// <summary>
-    /// Send action to database with documents.
+    ///     Send action to database with documents.
     /// </summary>
     /// <param name="documents">Documents to action</param>
     /// <param name="action">Action for database</param>
@@ -78,7 +78,7 @@ public class IndexClient
     }
 
     /// <summary>
-    /// Retrieve documents from database with optional filter.
+    ///     Retrieve documents from database with optional filter.
     /// </summary>
     /// <param name="filter">Optional: Documents filter</param>
     /// <returns>Enumerable of documents from database</returns>
@@ -108,7 +108,7 @@ public class IndexClient
     }
 
     /// <summary>
-    /// Retrieve documents from database with only necessary fields.
+    ///     Retrieve documents from database with only necessary fields.
     /// </summary>
     /// <returns>List of documents from database</returns>
     public async Task<List<Document>> GetDocumentsForComparisonAsync()
@@ -137,7 +137,7 @@ public class IndexClient
     }
 
     /// <summary>
-    /// Retrieve the total amount of documents inside of database/index.
+    ///     Retrieve the total amount of documents inside of database/index.
     /// </summary>
     /// <returns>Integer of amount of documents in index</returns>
     public async Task<int> GetDocumentsCountAsync()

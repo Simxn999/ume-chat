@@ -9,34 +9,34 @@ using Ume_Chat_External_General.Models.Functions.Sitemap;
 namespace Ume_Chat_External_Functions.Clients;
 
 /// <summary>
-/// Client for handling sitemap.
+///     Client for handling sitemap.
 /// </summary>
 /// <param name="logger">ILogger</param>
 [DebuggerDisplay("{SitemapURL}")]
 public class SitemapClient(ILogger logger)
 {
     /// <summary>
-    /// URL to sitemap.
+    ///     URL to sitemap.
     /// </summary>
     private string SitemapURL { get; } = Variables.Get("SITEMAP_URL");
-    
+
     /// <summary>
-    /// Namespace of sitemap.
+    ///     Namespace of sitemap.
     /// </summary>
     private string SitemapNamespace { get; } = Variables.Get("SITEMAP_NAMESPACE");
-    
+
     /// <summary>
-    /// Download URL path in sitemap.
+    ///     Download URL path in sitemap.
     /// </summary>
     private string SitemapDownloadsURL { get; } = Variables.Get("SITEMAP_DOWNLOADS_URL");
-    
+
     /// <summary>
-    /// Images URL path in sitemap.
+    ///     Images URL path in sitemap.
     /// </summary>
     private string SitemapImagesURL { get; } = Variables.Get("SITEMAP_IMAGES_URL");
 
     /// <summary>
-    /// Retrieve sitemap for website.
+    ///     Retrieve sitemap for website.
     /// </summary>
     /// <returns>Sitemap for website</returns>
     public async Task<Sitemap> GetSitemapAsync()
@@ -50,7 +50,7 @@ public class SitemapClient(ILogger logger)
 
             // Decompress gzip
             await using var gzip = new GZipStream(dataStream, CompressionMode.Decompress);
-            
+
             // Convert gzip to xml
             using var reader = new StreamReader(gzip);
             var xmlString = await reader.ReadToEndAsync();
@@ -73,7 +73,7 @@ public class SitemapClient(ILogger logger)
     }
 
     /// <summary>
-    /// Retrieve relevant items from sitemap.
+    ///     Retrieve relevant items from sitemap.
     /// </summary>
     /// <param name="sitemap">Sitemap to handle</param>
     /// <returns>List of sitemap items</returns>
