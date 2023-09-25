@@ -26,14 +26,9 @@ public class SitemapClient(ILogger logger)
     private string SitemapNamespace { get; } = Variables.Get("SITEMAP_NAMESPACE");
 
     /// <summary>
-    ///     Download URL path in sitemap.
+    ///     Enumerable of URLs that are irrelevant for the chatbot.
     /// </summary>
-    private string SitemapDownloadsURL { get; } = Variables.Get("SITEMAP_DOWNLOADS_URL");
-
-    /// <summary>
-    ///     Images URL path in sitemap.
-    /// </summary>
-    private string SitemapImagesURL { get; } = Variables.Get("SITEMAP_IMAGES_URL");
+    private IEnumerable<string> SitemapExcludedURLs { get; } = Variables.GetEnumerable("SITEMAP_EXCLUDED_URLS").ToList();
 
     /// <summary>
     ///     Retrieve sitemap for website.
@@ -81,7 +76,7 @@ public class SitemapClient(ILogger logger)
     {
         try
         {
-            return sitemap.Items.Where(item => !item.URL.StartsWith(SitemapImagesURL) && !item.URL.StartsWith(SitemapDownloadsURL)).ToList();
+            return sitemap.Items.Where(item => !SitemapExcludedURLs.Any(u => item.URL.StartsWith(u))).ToList();
         }
         catch (Exception e)
         {
