@@ -204,6 +204,8 @@ public class DataClient
             for (var i = 0; i < batches.Count; i++)
                 await RunBatch(batches[i], i + 1, batches.Count);
 
+            await CrawlerClient.CloseBrowserAsync();
+
             _logger.LogInformation($"Successfully ran {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}!",
                                    batches.Count);
         }

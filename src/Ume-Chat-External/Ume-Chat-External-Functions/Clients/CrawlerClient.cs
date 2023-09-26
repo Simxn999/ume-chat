@@ -66,8 +66,6 @@ public class CrawlerClient
             for (var i = 0; i < sitemapItems.Count; i++)
                 output.Add(await CrawlSitemapItemAsync(sitemapItems[i], i + 1, sitemapItems.Count));
 
-            await Browser.CloseAsync();
-
             // Remove webpages with invalid data
             output = output.Where(w => !string.IsNullOrEmpty(w.URL) &&
                                        !string.IsNullOrEmpty(w.Title) &&
@@ -83,6 +81,15 @@ public class CrawlerClient
             _logger.LogError(e, "Failed crawling of sitemap items!");
             throw;
         }
+    }
+
+    /// <summary>
+    ///     Closes the browser instance used by the crawler.
+    /// </summary>
+    public async Task CloseBrowserAsync()
+    {
+        if (!Browser.IsClosed)
+            await Browser.CloseAsync();
     }
 
     /// <summary>
