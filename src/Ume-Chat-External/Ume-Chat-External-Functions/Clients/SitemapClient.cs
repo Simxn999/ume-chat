@@ -28,7 +28,8 @@ public class SitemapClient(ILogger logger)
     /// <summary>
     ///     Enumerable of URLs that are irrelevant for the chatbot.
     /// </summary>
-    private IEnumerable<string> SitemapExcludedURLs { get; } = Variables.GetEnumerable("SITEMAP_EXCLUDED_URLS").ToList();
+    private IEnumerable<string> SitemapExcludedURLs { get; } =
+        Variables.GetEnumerable("SITEMAP_EXCLUDED_URLS").ToList();
 
     /// <summary>
     ///     Retrieve sitemap for website.
@@ -54,7 +55,8 @@ public class SitemapClient(ILogger logger)
             ArgumentNullException.ThrowIfNull(xml.DocumentElement, nameof(xml.DocumentElement));
 
             // Retrieve sitemap from xml
-            var serializer = new XmlSerializer(typeof(Sitemap), new XmlRootAttribute("urlset") { Namespace = SitemapNamespace });
+            var serializer = new XmlSerializer(typeof(Sitemap),
+                                               new XmlRootAttribute("urlset") { Namespace = SitemapNamespace });
             var sitemap = serializer.Deserialize(new XmlNodeReader(xml.DocumentElement)) as Sitemap;
             ArgumentNullException.ThrowIfNull(sitemap, nameof(sitemap));
 

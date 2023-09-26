@@ -154,9 +154,11 @@ public class DataClient
                                                       //        OR
                                                       //    Webpage has been updated since it was uploaded to database
                                                       return document is null || document.LastModified < i.LastModified;
-                                                  }).ToList();
+                                                  })
+                                           .ToList();
 
-            _logger.LogInformation($"Retrieved {{count}} item{Grammar.GetPlurality(sitemapItems.Count, "", "s")} from sitemap!", sitemapItems.Count);
+            _logger.LogInformation($"Retrieved {{count}} item{Grammar.GetPlurality(sitemapItems.Count, "", "s")} from sitemap!",
+                                   sitemapItems.Count);
             return sitemapItems;
         }
         catch (Exception e)
@@ -194,14 +196,16 @@ public class DataClient
     /// <param name="batches">Batches/List of lists of sitemap items to execute</param>
     private async Task RunBatches(List<List<SitemapItem>> batches)
     {
-        _logger.LogInformation($"Running {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}...", batches.Count);
+        _logger.LogInformation($"Running {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}...",
+                               batches.Count);
 
         try
         {
             for (var i = 0; i < batches.Count; i++)
                 await RunBatch(batches[i], i + 1, batches.Count);
 
-            _logger.LogInformation($"Successfully ran {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}!", batches.Count);
+            _logger.LogInformation($"Successfully ran {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}!",
+                                   batches.Count);
         }
         catch (Exception e)
         {
@@ -257,7 +261,8 @@ public class DataClient
         {
             var documents = Index.Where(d => batch.Any(item => item.URL == d.URL)).ToList();
 
-            _logger.LogInformation($"Retrieved {{count}} outdated document{Grammar.GetPlurality(documents.Count, "", "s")}!", documents.Count);
+            _logger.LogInformation($"Retrieved {{count}} outdated document{Grammar.GetPlurality(documents.Count, "", "s")}!",
+                                   documents.Count);
             return documents;
         }
         catch (Exception e)
@@ -279,7 +284,8 @@ public class DataClient
         {
             var documents = Index.Where(d => SitemapItems.All(item => d.URL != item.URL)).ToList();
 
-            _logger.LogInformation($"Retrieved {{count}} invalid document{Grammar.GetPlurality(documents.Count, "", "s")}!", documents.Count);
+            _logger.LogInformation($"Retrieved {{count}} invalid document{Grammar.GetPlurality(documents.Count, "", "s")}!",
+                                   documents.Count);
             return documents;
         }
         catch (Exception e)
@@ -295,14 +301,16 @@ public class DataClient
     /// <param name="documents">Documents to delete</param>
     private async Task DeleteDocumentsAsync(ICollection<Document> documents)
     {
-        _logger.LogInformation($"Deleting {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...", documents.Count);
+        _logger.LogInformation($"Deleting {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...",
+                               documents.Count);
 
         try
         {
             if (documents.Count > 0)
                 await IndexClient.IndexDocumentsAsync(documents, IndexDocumentsAction.Delete);
 
-            _logger.LogInformation($"Deleted {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}!", documents.Count);
+            _logger.LogInformation($"Deleted {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}!",
+                                   documents.Count);
         }
         catch (Exception e)
         {
@@ -317,14 +325,16 @@ public class DataClient
     /// <param name="documents">Documents to upload</param>
     private async Task UploadDocumentsAsync(ICollection<Document> documents)
     {
-        _logger.LogInformation($"Uploading {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...", documents.Count);
+        _logger.LogInformation($"Uploading {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...",
+                               documents.Count);
 
         try
         {
             if (documents.Count > 0)
                 await IndexClient.IndexDocumentsAsync(documents, IndexDocumentsAction.MergeOrUpload);
 
-            _logger.LogInformation($"Uploaded {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}!", documents.Count);
+            _logger.LogInformation($"Uploaded {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}!",
+                                   documents.Count);
         }
         catch (Exception e)
         {

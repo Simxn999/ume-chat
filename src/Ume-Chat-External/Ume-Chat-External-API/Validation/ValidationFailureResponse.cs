@@ -13,9 +13,6 @@ public static class ValidationFailureMapper
 {
     public static ValidationFailureResponse ToResponse(this IEnumerable<ValidationFailure> failures)
     {
-        return new ValidationFailureResponse
-               {
-                   Errors = failures.Select(f => f.ErrorMessage)
-               };
+        return new ValidationFailureResponse { Errors = failures.Select(f => f.ErrorMessage) };
     }
 }

@@ -84,7 +84,8 @@ public class ChunkerClient
             var output = new List<Document>();
 
             // Crawl every webpage and add it to the output list
-            for (var i = 0; i < crawledWebpages.Count; i++) output.AddRange(ChunkCrawledWebpage(crawledWebpages[i], i + 1, crawledWebpages.Count));
+            for (var i = 0; i < crawledWebpages.Count; i++)
+                output.AddRange(ChunkCrawledWebpage(crawledWebpages[i], i + 1, crawledWebpages.Count));
 
             _logger.LogInformation("Chunked crawled webpages!");
             return output;
@@ -180,7 +181,8 @@ public class ChunkerClient
                 if (currentTokenCount > ChunkSize)
                 {
                     // Split the chunk with the next splitter
-                    foreach (var chunk in ChunkContentRecursive(stack.Pop(), ChunkSplitters[splitter])) stack.Push(chunk);
+                    foreach (var chunk in ChunkContentRecursive(stack.Pop(), ChunkSplitters[splitter]))
+                        stack.Push(chunk);
 
                     continue;
                 }

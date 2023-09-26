@@ -82,7 +82,8 @@ public class OpenAIEmbeddingsClient
             {
                 // Retrieve all documents with current URL
                 var groupDocuments = documents.Where(d => d.URL == urlGroups[i].Key).ToList();
-                groupDocuments = (await PopulateDocumentsByURLWithEmbeddingsAsync(groupDocuments, i + 1, urlGroups.Count)).ToList();
+                groupDocuments =
+                    (await PopulateDocumentsByURLWithEmbeddingsAsync(groupDocuments, i + 1, urlGroups.Count)).ToList();
 
                 output.AddRange(groupDocuments);
             }
@@ -105,11 +106,15 @@ public class OpenAIEmbeddingsClient
     /// <param name="index">Current index of webpage</param>
     /// <param name="total">Total number of webpages</param>
     /// <returns>Enumerable of documents populated with embeddings</returns>
-    private async Task<IEnumerable<Document>> PopulateDocumentsByURLWithEmbeddingsAsync(IList<Document> documents, int index, int total)
+    private async Task<IEnumerable<Document>> PopulateDocumentsByURLWithEmbeddingsAsync(
+        IList<Document> documents,
+        int index,
+        int total)
     {
         var url = documents.FirstOrDefault()?.URL ?? "[URL NOT FOUND]";
         _logger.LogInformation($"{new ProgressString(index, total)} Retrieving {{count}} embedding{Grammar.GetPlurality(documents.Count, "", "s")} for \"{{url}}\"...",
-                               documents.Count, url);
+                               documents.Count,
+                               url);
 
         try
         {
@@ -120,7 +125,8 @@ public class OpenAIEmbeddingsClient
 
             foreach (var batch in batches)
             {
-                Response<Embeddings>? response = await Client.GetEmbeddingsAsync(EmbeddingsDeployment, new EmbeddingsOptions(batch));
+                Response<Embeddings>? response =
+                    await Client.GetEmbeddingsAsync(EmbeddingsDeployment, new EmbeddingsOptions(batch));
 
                 embeddings.AddRange(response.Value.Data);
             }

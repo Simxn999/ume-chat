@@ -27,8 +27,6 @@ public class RequestMessageValidator : AbstractValidator<RequestMessage>
            .WithMessage("Role must be either 'assistant' or 'user'!");
 
         // Validate message
-        RuleFor(x => x.Message)
-           .NotEmpty()
-           .WithMessage("Message must be set!");
+        RuleFor(x => x.Message).NotEmpty().WithMessage("Message must be set!");
     }
 }

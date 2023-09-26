@@ -62,7 +62,8 @@ public class IndexClient
     /// </summary>
     /// <param name="documents">Documents to action</param>
     /// <param name="action">Action for database</param>
-    public async Task IndexDocumentsAsync(IEnumerable<Document> documents, Func<Document, IndexDocumentsAction<Document>> action)
+    public async Task IndexDocumentsAsync(IEnumerable<Document> documents,
+                                          Func<Document, IndexDocumentsAction<Document>> action)
     {
         try
         {
@@ -89,10 +90,7 @@ public class IndexClient
 
         try
         {
-            var options = new SearchOptions
-                          {
-                              Filter = filter ?? ""
-                          };
+            var options = new SearchOptions { Filter = filter ?? "" };
 
             Response<SearchResults<Document>>? result = await SearchClient.SearchAsync<Document>(string.Empty, options);
             var documents = result.Value.GetResults().Select(item => item.Document);
@@ -121,7 +119,14 @@ public class IndexClient
             var options = new SearchOptions
                           {
                               // Necessary fields
-                              Select = { "id", "url", "title", "lastmod", "chunk_id" },
+                              Select =
+                              {
+                                  "id",
+                                  "url",
+                                  "title",
+                                  "lastmod",
+                                  "chunk_id"
+                              },
                               Size = documentsCount
                           };
             var result = await SearchClient.SearchAsync<Document>(string.Empty, options);

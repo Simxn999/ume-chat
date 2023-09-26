@@ -65,14 +65,17 @@ public class CrawlerClient
             // Crawl every sitemap item and add it to the output list
             for (var i = 0; i < sitemapItems.Count; i++)
                 output.Add(await CrawlSitemapItemAsync(sitemapItems[i], i + 1, sitemapItems.Count));
-            
+
             await Browser.CloseAsync();
 
             // Remove webpages with invalid data
-            output = output.Where(w => !string.IsNullOrEmpty(w.URL) && !string.IsNullOrEmpty(w.Title)
-                                                                    && !string.IsNullOrEmpty(w.Content)).ToList();
+            output = output.Where(w => !string.IsNullOrEmpty(w.URL) &&
+                                       !string.IsNullOrEmpty(w.Title) &&
+                                       !string.IsNullOrEmpty(w.Content))
+                           .ToList();
 
-            _logger.LogInformation($"Crawled {{count}} sitemap item{Grammar.GetPlurality(output.Count, "", "s")}!", output.Count);
+            _logger.LogInformation($"Crawled {{count}} sitemap item{Grammar.GetPlurality(output.Count, "", "s")}!",
+                                   output.Count);
             return output;
         }
         catch (Exception e)
@@ -108,7 +111,11 @@ public class CrawlerClient
         try
         {
             await new BrowserFetcher().DownloadAsync();
-            Browser = await Puppeteer.LaunchAsync(new LaunchOptions { Timeout = 0, Args = new[] { "--no-sandbox" } });
+            Browser = await Puppeteer.LaunchAsync(new LaunchOptions
+                                                  {
+                                                      Timeout = 0,
+                                                      Args = new[] { "--no-sandbox" }
+                                                  });
 
             return Browser;
         }

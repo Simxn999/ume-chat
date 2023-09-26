@@ -63,7 +63,8 @@ public static class OpenAIChatClient
     /// <summary>
     ///     Key to Azure Cognitive Search.
     /// </summary>
-    private static AzureKeyCredential SearchKey { get; } = new AzureKeyCredential(Variables.Get("COGNITIVESEARCH_API_KEY"));
+    private static AzureKeyCredential SearchKey { get; } =
+        new AzureKeyCredential(Variables.Get("COGNITIVESEARCH_API_KEY"));
 
     /// <summary>
     ///     Name of content field.
@@ -123,9 +124,11 @@ public static class OpenAIChatClient
     /// </summary>
     /// <param name="chatMessages">Messages</param>
     /// <returns>Answer message and citations chunked in an asynchronous enumerable</returns>
-    public static async Task<IAsyncEnumerable<ChatMessage>> SendChatRequestStreamingAsync(IEnumerable<ChatMessage> chatMessages)
+    public static async Task<IAsyncEnumerable<ChatMessage>> SendChatRequestStreamingAsync(
+        IEnumerable<ChatMessage> chatMessages)
     {
-        var response = await Client.GetChatCompletionsStreamingAsync(GPTDeployment, GetChatCompletionOptions(chatMessages));
+        var response =
+            await Client.GetChatCompletionsStreamingAsync(GPTDeployment, GetChatCompletionOptions(chatMessages));
 
         var asyncEnumerator = response.Value.GetChoicesStreaming().GetAsyncEnumerator();
 
@@ -141,10 +144,7 @@ public static class OpenAIChatClient
     /// <returns>Enumerable of messages including system message</returns>
     public static IEnumerable<ChatMessage> GetChatMessages(IEnumerable<RequestMessage> requestMessages)
     {
-        var messages = new List<ChatMessage>
-                       {
-                           new ChatMessage(ChatRole.System, RoleInformation)
-                       };
+        var messages = new List<ChatMessage> { new ChatMessage(ChatRole.System, RoleInformation) };
 
         messages.AddRange(requestMessages.Select(m => new ChatMessage(GetChatRole(m.Role), m.Message)));
 
@@ -191,13 +191,7 @@ public static class OpenAIChatClient
     /// <returns>Configured AzureChatExtensionsOptions</returns>
     private static AzureChatExtensionsOptions GetAzureExtensionsOptions()
     {
-        return new AzureChatExtensionsOptions
-               {
-                   Extensions =
-                   {
-                       GetAzureCognitiveSearchChatExtensionConfiguration()
-                   }
-               };
+        return new AzureChatExtensionsOptions { Extensions = { GetAzureCognitiveSearchChatExtensionConfiguration() } };
     }
 
     /// <summary>

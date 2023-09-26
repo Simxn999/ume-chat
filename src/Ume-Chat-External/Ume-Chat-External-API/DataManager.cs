@@ -67,10 +67,7 @@ public static class DataManager
         var chunks = await OpenAIChatClient.SendChatRequestStreamingAsync(messages);
         await using var writer = new StreamWriter(context.Response.Body);
         var completeChatResponse = new ChatResponseExtended();
-        var jsonOptions = new JsonSerializerOptions
-                          {
-                              Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-                          };
+        var jsonOptions = new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
 
         // Writes chunks to response & compiles a complete response object
         await foreach (var chunk in chunks)
@@ -105,7 +102,9 @@ public static class DataManager
     /// <param name="writer">Writer</param>
     /// <param name="jsonOptions">JsonSerializerOptions</param>
     /// <returns>Assistant answer chunk with citations</returns>
-    private static async Task<ChatResponse> WriteChunkToStreamAsync(ChatMessage chunk, TextWriter writer, JsonSerializerOptions jsonOptions)
+    private static async Task<ChatResponse> WriteChunkToStreamAsync(ChatMessage chunk,
+                                                                    TextWriter writer,
+                                                                    JsonSerializerOptions jsonOptions)
     {
         var chatResponse = new ChatResponseExtended(chunk);
 
@@ -123,7 +122,9 @@ public static class DataManager
     /// <param name="object">Object to write</param>
     /// <param name="writer">Writer</param>
     /// <param name="jsonOptions">JsonSerializerOptions</param>
-    private static async Task WriteObjectToStreamAsync(object @object, TextWriter writer, JsonSerializerOptions jsonOptions)
+    private static async Task WriteObjectToStreamAsync(object @object,
+                                                       TextWriter writer,
+                                                       JsonSerializerOptions jsonOptions)
     {
         var jsonString = JsonSerializer.Serialize(@object, jsonOptions);
 
