@@ -228,19 +228,31 @@ public class DataClient
 
         try
         {
+            var webpages = new List<CrawledWebpage>();
+            var documents = new List<Document>();
+            var documentsToDelete = new List<Document>();
+
             // Crawling
-            var webpages = (await CrawlerClient.CrawlSitemapItemsAsync(batch)).ToList();
+            if (batch.Count > 0)
+                webpages = (await CrawlerClient.CrawlSitemapItemsAsync(batch)).ToList();
 
             // Chunking
-            var documents = ChunkerClient.ChunkCrawledWebpages(webpages);
+            if (webpages.Count > 0)
+                documents = ChunkerClient.ChunkCrawledWebpages(webpages);
 
             // Embeddings
-            documents = await OpenAIEmbeddingsClient.RetrieveEmbeddingsAsync(documents);
+            if (documents.Count > 0)
+                documents = await OpenAIEmbeddingsClient.RetrieveEmbeddingsAsync(documents);
 
-            var documentsToDelete = GetOutdatedDocumentsFromBatch(batch);
+            // Delete
+            if (batch.Count > 0)
+                documentsToDelete = GetOutdatedDocumentsFromBatch(batch);
+            if (documentsToDelete.Count > 0)
+                await DeleteDocumentsAsync(documentsToDelete);
 
-            await DeleteDocumentsAsync(documentsToDelete);
-            await UploadDocumentsAsync(documents);
+            // Upload
+            if (documents.Count > 0)
+                await UploadDocumentsAsync(documents);
 
             _logger.LogInformation("Batch {index} complete!", index);
         }

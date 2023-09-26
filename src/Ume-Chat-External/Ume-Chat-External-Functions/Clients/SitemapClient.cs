@@ -26,10 +26,10 @@ public class SitemapClient(ILogger logger)
     private string SitemapNamespace { get; } = Variables.Get("SITEMAP_NAMESPACE");
 
     /// <summary>
-    ///     Enumerable of URLs that are irrelevant for the chatbot.
+    ///     Enumerable of segments in URLs that should be excluded from the database.
     /// </summary>
-    private IEnumerable<string> SitemapExcludedURLs { get; } =
-        Variables.GetEnumerable("SITEMAP_EXCLUDED_URLS").ToList();
+    private IEnumerable<string> SitemapExcludedURLSegments { get; } =
+        Variables.GetEnumerable("SITEMAP_EXCLUDED_URL_SEGMENTS").ToList();
 
     /// <summary>
     ///     Retrieve sitemap for website.
@@ -78,7 +78,7 @@ public class SitemapClient(ILogger logger)
     {
         try
         {
-            return sitemap.Items.Where(item => !SitemapExcludedURLs.Any(u => item.URL.StartsWith(u))).ToList();
+            return sitemap.Items.Where(item => !SitemapExcludedURLSegments.Any(k => item.URL.Contains(k))).ToList();
         }
         catch (Exception e)
         {

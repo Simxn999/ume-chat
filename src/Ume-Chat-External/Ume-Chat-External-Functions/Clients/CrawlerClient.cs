@@ -29,6 +29,11 @@ public class CrawlerClient
     private string TitleSuffix { get; set; } = default!;
 
     /// <summary>
+    ///     Enumerable of titles that are irrelevant for the chatbot.
+    /// </summary>
+    private IEnumerable<string> ExcludedTitles { get; } = Variables.GetEnumerable("CRAWLER_EXCLUDED_TITLES").ToList();
+
+    /// <summary>
     ///     Create CrawlerClient and initialize properties asynchronously.
     /// </summary>
     /// <param name="logger">ILogger</param>
@@ -66,14 +71,13 @@ public class CrawlerClient
             for (var i = 0; i < sitemapItems.Count; i++)
                 output.Add(await CrawlSitemapItemAsync(sitemapItems[i], i + 1, sitemapItems.Count));
 
+            var invalidWebpages = GetInvalidWebpages(output);
+
             // Remove webpages with invalid data
-            output = output.Where(w => !string.IsNullOrEmpty(w.URL) &&
-                                       !string.IsNullOrEmpty(w.Title) &&
-                                       !string.IsNullOrEmpty(w.Content))
-                           .ToList();
+            output = output.Where(w => invalidWebpages.All(iw => iw.URL != w.URL)).ToList();
 
             _logger.LogInformation($"Crawled {{count}} sitemap item{Grammar.GetPlurality(output.Count, "", "s")}!",
-                                   output.Count);
+                                   sitemapItems.Count);
             return output;
         }
         catch (Exception e)
@@ -214,5 +218,18 @@ public class CrawlerClient
             _logger.LogError(e, "Failed retrieval of content!");
             throw;
         }
+    }
+
+    private List<CrawledWebpage> GetInvalidWebpages(IEnumerable<CrawledWebpage> webpages)
+    {
+        var invalidWebpages = webpages.Where(w => string.IsNullOrEmpty(w.Title) ||
+                                                  string.IsNullOrEmpty(w.Content) ||
+                                                  ExcludedTitles.Any(t => t.Equals(w.Title)))
+                                      .ToList();
+
+        foreach (var invalidWebpage in invalidWebpages)
+            _logger.LogInformation("Sitemap item was determined invalid! {URL}", invalidWebpage.URL);
+
+        return invalidWebpages;
     }
 }
