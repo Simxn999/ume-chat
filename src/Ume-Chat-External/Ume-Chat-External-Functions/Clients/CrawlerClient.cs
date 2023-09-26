@@ -65,6 +65,8 @@ public class CrawlerClient
             // Crawl every sitemap item and add it to the output list
             for (var i = 0; i < sitemapItems.Count; i++)
                 output.Add(await CrawlSitemapItemAsync(sitemapItems[i], i + 1, sitemapItems.Count));
+            
+            await Browser.CloseAsync();
 
             // Remove webpages with invalid data
             output = output.Where(w => !string.IsNullOrEmpty(w.URL) && !string.IsNullOrEmpty(w.Title)
