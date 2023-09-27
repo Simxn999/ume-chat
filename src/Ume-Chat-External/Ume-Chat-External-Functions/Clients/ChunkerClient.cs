@@ -22,7 +22,7 @@ public class ChunkerClient
             ChunkOverlap = Variables.GetInt("CHUNK_OVERLAP_SIZE");
             ChunkSize = Variables.GetInt("CHUNK_SIZE") - ChunkOverlap;
             TokenizerEncodingModel = Variables.Get("TOKENIZER_ENCODING_MODEL");
-            ExternalLinkTooltip = Variables.Get("EXTERNAL_LINK_TOOLTIP");
+            ExcludedContent = Variables.GetEnumerable("CHUNKER_EXCLUDED_CONTENT");
             Tokenizer = GptEncoding.GetEncoding(TokenizerEncodingModel);
             ChunkSplitters = new Dictionary<string, string>
                              {
@@ -55,10 +55,9 @@ public class ChunkerClient
     private string TokenizerEncodingModel { get; }
 
     /// <summary>
-    ///     Website tooltip for links.
-    ///     Is removed from the data because it is irrelevant for the chatbot.
+    ///     Enumerable of strings that should be removed from data.
     /// </summary>
-    private string ExternalLinkTooltip { get; }
+    private IEnumerable<string> ExcludedContent { get; }
 
     /// <summary>
     ///     Dictionary of strings to recursively split chunks by.
@@ -160,8 +159,9 @@ public class ChunkerClient
         {
             var chunks = new List<string>();
 
-            // Remove link tooltip from content
-            content = content.Replace(ExternalLinkTooltip, "");
+            // Remove irrelevant content
+            content = ExcludedContent.Aggregate(content,
+                                                (current, excludedContent) => current.Replace(excludedContent, ""));
 
             // Remove leading whitespace from linebreaks
             content = content.Replace(" \n", "\n");
