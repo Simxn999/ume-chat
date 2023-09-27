@@ -46,6 +46,11 @@ public static class OpenAIChatClient
     private static int MaxTokens { get; } = Variables.GetInt("API_CHAT_REQUEST_MAX_TOKENS");
 
     /// <summary>
+    ///     Amount of documents sent to the chatbot.
+    /// </summary>
+    private static int DocumentCount { get; } = Variables.GetInt("API_CHAT_REQUEST_DOCUMENT_COUNT");
+
+    /// <summary>
     ///     Endpoint to Azure OpenAI Embedding deployment.
     /// </summary>
     private static Uri EmbeddingEndpoint { get; } = new Uri(Variables.Get("OPENAI_EMBEDDING_ENDPOINT"));
@@ -202,6 +207,7 @@ public static class OpenAIChatClient
     {
         return new AzureCognitiveSearchChatExtensionConfiguration
                {
+                   DocumentCount = DocumentCount,
                    EmbeddingEndpoint = EmbeddingEndpoint,
                    EmbeddingKey = OpenAIKey,
                    FieldMappingOptions = GetFieldMappingOptions(),
