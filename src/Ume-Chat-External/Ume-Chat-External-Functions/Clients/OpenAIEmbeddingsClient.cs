@@ -125,8 +125,7 @@ public class OpenAIEmbeddingsClient
 
             foreach (var batch in batches)
             {
-                Response<Embeddings>? response =
-                    await Client.GetEmbeddingsAsync(EmbeddingsDeployment, new EmbeddingsOptions(batch));
+                var response = await Client.GetEmbeddingsAsync(EmbeddingsDeployment, new EmbeddingsOptions(batch));
 
                 embeddings.AddRange(response.Value.Data);
             }
