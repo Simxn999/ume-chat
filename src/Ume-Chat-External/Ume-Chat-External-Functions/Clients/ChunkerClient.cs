@@ -128,8 +128,6 @@ public class ChunkerClient
                 chunks[i] += Tokenizer.Decode(overlap) + "...";
             }
 
-            chunks[^1] = chunks[^1].Trim();
-
             // Convert chunks to documents
             output.AddRange(chunks.Select((chunk, i) => new Document
                                                         {
@@ -191,7 +189,7 @@ public class ChunkerClient
                 if (currentTokenCount <= ChunkSize && nextTokenCount > ChunkSize)
                 {
                     // Register the chunk and move on to the next
-                    chunks.Add(sb.ToString().Trim('\n'));
+                    chunks.Add(sb.ToString());
                     sb.Clear();
                     continue;
                 }
