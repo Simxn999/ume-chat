@@ -62,7 +62,7 @@ public static class DataManager
     /// <param name="messages">Messages</param>
     private static async Task GetChatResponseStreamingAsync(HttpContext context, IEnumerable<ChatMessage> messages)
     {
-        context.Response.Headers.Add("Content-Type", "text/event-stream");
+        context.Response.Headers["Content-Type"] = "text/event-stream";
 
         var chunks = await OpenAIChatClient.SendChatRequestStreamingAsync(messages);
         await using var writer = new StreamWriter(context.Response.Body);
