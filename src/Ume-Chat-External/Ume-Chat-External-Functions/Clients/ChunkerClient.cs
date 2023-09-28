@@ -157,15 +157,9 @@ public class ChunkerClient
     {
         try
         {
+            FilterContent(ref content);
+
             var chunks = new List<string>();
-
-            // Remove irrelevant content
-            content = ExcludedContent.Aggregate(content,
-                                                (current, excludedContent) => current.Replace(excludedContent, ""));
-
-            // Remove leading whitespace from linebreaks
-            content = content.Replace(" \n", "\n");
-
             var stack = new Stack<string>(content.Split(splitter).Reverse());
 
             // StringBuilder containing the chunk
@@ -199,12 +193,60 @@ public class ChunkerClient
 
             chunks.Add(sb.ToString().Trim('\n'));
 
+            if (splitter == ChunkSplitters["#"])
+                CombineSmallChunksWithAdjacent(ref chunks);
+
             return chunks;
         }
         catch (Exception e)
         {
             _logger.LogError(e, "Failed recursive chunking of content!");
             throw;
+        }
+    }
+
+    /// <summary>
+    ///     Remove unwanted content from text.
+    /// </summary>
+    /// <param name="content">Text to remove content from</param>
+    private void FilterContent(ref string content)
+    {
+        foreach (var value in ExcludedContent)
+            content = content.Replace(value, string.Empty);
+
+        content = content.Replace(" \n", "\n");
+    }
+
+    /// <summary>
+    ///     Searches for small chunks and combines them with the chunk next to it.
+    ///     This eliminates documents in the database that
+    ///     most likely does not contain any contextual information.
+    /// </summary>
+    /// <param name="chunks">List of strings that are chunks</param>
+    private void CombineSmallChunksWithAdjacent(ref List<string> chunks)
+    {
+        var smallChunkSize = ChunkSize / 4;
+
+        for (var i = chunks.Count - 1; i >= 0; i--)
+        {
+            if (chunks.Count == 1)
+                break;
+
+            var chunkTokenSize = GetTokenCount(chunks[i]);
+
+            if (chunkTokenSize > smallChunkSize)
+                continue;
+
+            if (i == 0)
+            {
+                chunks[i + 1] = chunks[i] + chunks[i + 1];
+                chunks.RemoveAt(i);
+
+                continue;
+            }
+
+            chunks[i - 1] += chunks[i];
+            chunks.RemoveAt(i);
         }
     }
 
