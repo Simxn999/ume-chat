@@ -79,21 +79,25 @@ public class IndexClient
     }
 
     /// <summary>
-    ///     Retrieve documents from database with optional filter.
+    ///     Retrieve documents from database with optional filter and field selection.
     /// </summary>
     /// <param name="filter">Optional: Documents filter</param>
+    /// <param name="select">Optional: Fields to retrieve along with documents</param>
     /// <returns>Enumerable of documents from database</returns>
-    public async Task<IEnumerable<Document>> GetDocumentsAsync(string? filter = null)
+    public async Task<IEnumerable<Document>> GetDocumentsAsync(string? filter = null,
+                                                               IEnumerable<string>? select = null)
     {
         var documentsCount = await GetDocumentsCountAsync();
         _logger.LogInformation("Retrieving {count} documents...", documentsCount);
 
         try
         {
-            var options = new SearchOptions { Filter = filter ?? "" };
+            var options = new SearchOptions { Filter = filter ?? string.Empty };
+            foreach (var field in select ?? Enumerable.Empty<string>())
+                options.Select.Add(field);
 
             Response<SearchResults<Document>>? result = await SearchClient.SearchAsync<Document>(string.Empty, options);
-            var documents = result.Value.GetResults().Select(item => item.Document);
+            var documents = result.Value.GetResults().Select(item => item.Document).ToList();
 
             _logger.LogInformation("Retrieved {count} documents!", documentsCount);
             return documents;
