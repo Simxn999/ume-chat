@@ -87,8 +87,7 @@ public class IndexClient
     public async Task<IEnumerable<Document>> GetDocumentsAsync(string? filter = null,
                                                                IEnumerable<string>? select = null)
     {
-        var documentsCount = await GetDocumentsCountAsync();
-        _logger.LogInformation("Retrieving {count} documents...", documentsCount);
+        _logger.LogInformation("Retrieving documents...");
 
         try
         {
@@ -96,10 +95,10 @@ public class IndexClient
             foreach (var field in select ?? Enumerable.Empty<string>())
                 options.Select.Add(field);
 
-            Response<SearchResults<Document>>? result = await SearchClient.SearchAsync<Document>(string.Empty, options);
+            var result = await SearchClient.SearchAsync<Document>(string.Empty, options);
             var documents = result.Value.GetResults().Select(item => item.Document).ToList();
 
-            _logger.LogInformation("Retrieved {count} documents!", documentsCount);
+            _logger.LogInformation("Retrieved {count} documents!", documents.Count);
             return documents;
         }
         catch (Exception e)
