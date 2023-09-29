@@ -49,8 +49,7 @@ public static class DataManager
     private static async Task<ChatResponse> GetChatResponseAsync(IEnumerable<ChatMessage> messages)
     {
         var chatResponse = await OpenAIChatClient.SendChatRequestAsync(messages);
-        chatResponse.RemoveUnusedCitations();
-        chatResponse.NumberCitations();
+        chatResponse.DeclutterCitations();
 
         return chatResponse;
     }
@@ -87,9 +86,8 @@ public static class DataManager
         // Indicate end of stream
         await WriteEndToStreamAsync(writer);
 
-        // Clean up compiled chat response
-        completeChatResponse.RemoveUnusedCitations();
-        completeChatResponse.NumberCitations();
+        // Declutter compiled chat response
+        completeChatResponse.DeclutterCitations();
 
         // Write compiled chat response
         await WriteObjectToStreamAsync(completeChatResponse, writer, jsonOptions);
