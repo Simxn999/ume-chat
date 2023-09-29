@@ -78,7 +78,7 @@ public static class DataManager
             // Compile complete chat response
 
             if (chunkChatResponse.Citations is not null)
-                completeChatResponse.Citations?.AddRange(chunkChatResponse.Citations);
+                completeChatResponse.Citations = chunkChatResponse.Citations;
 
             if (chunkChatResponse.Message is not null)
                 completeChatResponse.Message += chunkChatResponse.Message;
