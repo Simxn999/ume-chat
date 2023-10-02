@@ -1,4 +1,5 @@
-﻿using Azure;
+﻿using System.Globalization;
+using Azure;
 using Azure.AI.OpenAI;
 using Ume_Chat_External_General;
 using Ume_Chat_External_General.Models.API.Request;
@@ -149,7 +150,14 @@ public static class OpenAIChatClient
     /// <returns>Enumerable of messages including system message</returns>
     public static IEnumerable<ChatMessage> GetChatMessages(IEnumerable<RequestMessage> requestMessages)
     {
-        var messages = new List<ChatMessage> { new ChatMessage(ChatRole.System, RoleInformation) };
+        var date = DateTime.Now;
+        var cultureInfo = new CultureInfo("sv-SE");
+        var messages = new List<ChatMessage>
+                       {
+                           new ChatMessage(ChatRole.System, RoleInformation),
+                           new ChatMessage(ChatRole.User,
+                                           $"Dagens datum är {date.ToString("D", cultureInfo)} och klockan är just nu {date:t}.")
+                       };
 
         messages.AddRange(requestMessages.Select(m => new ChatMessage(GetChatRole(m.Role), m.Message)));
 
