@@ -1,6 +1,6 @@
 ﻿using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
-using SharpToken;
 using Ume_Chat_External_General;
 using Ume_Chat_External_General.Models.Functions;
 
@@ -19,18 +19,20 @@ public class ChunkerClient
         {
             _logger = logger;
 
-            ChunkOverlap = Variables.GetInt("CHUNK_OVERLAP_SIZE");
-            ChunkSize = Variables.GetInt("CHUNK_SIZE") - ChunkOverlap;
-            TokenizerEncodingModel = Variables.Get("TOKENIZER_ENCODING_MODEL");
+            ChunkSize = Variables.GetInt("CHUNK_SIZE");
+            ChunkOverlap = (int)(ChunkSize * Variables.GetFloat("CHUNK_OVERLAP_MULTIPLIER"));
             ExcludedContent = Variables.GetEnumerable("CHUNKER_EXCLUDED_CONTENT");
-            Tokenizer = GptEncoding.GetEncoding(TokenizerEncodingModel);
             ChunkSplitters = new Dictionary<string, string>
                              {
                                  { "#", "\n\n" },
                                  { "\n\n", "\n" },
-                                 { "\n", " " },
-                                 { " ", " " }
+                                 { "\n", "." },
+                                 { ".", "?" },
+                                 { "?", "!" },
+                                 { "!", " " },
+                                 { " ", string.Empty }
                              };
+            SentenceSplitters = new[] { '\n', '.', '!', '?' };
         }
         catch (Exception e)
         {
@@ -40,19 +42,14 @@ public class ChunkerClient
     }
 
     /// <summary>
-    ///     Size of chunks in amount of tokens.
+    ///     Size of chunks in amount of characters.
     /// </summary>
     private int ChunkSize { get; }
 
     /// <summary>
-    ///     Size of overlap between chunks in amount of tokens.
+    ///     Size of overlap between chunks in amount of characters.
     /// </summary>
     private int ChunkOverlap { get; }
-
-    /// <summary>
-    ///     Encoding model for converting text into tokens used by OpenAI.
-    /// </summary>
-    private string TokenizerEncodingModel { get; }
 
     /// <summary>
     ///     Enumerable of strings that should be removed from data.
@@ -65,9 +62,9 @@ public class ChunkerClient
     private Dictionary<string, string> ChunkSplitters { get; }
 
     /// <summary>
-    ///     Client to manage tokens used by OpenAI.
+    ///     Array of characters that determine the ending of a sentence.
     /// </summary>
-    private GptEncoding Tokenizer { get; }
+    private char[] SentenceSplitters { get; }
 
     /// <summary>
     ///     Splits content of crawled webpages into chunks in the form of documents.
@@ -114,18 +111,8 @@ public class ChunkerClient
             // Retrieve chunks of content
             var chunks = ChunkContentRecursive(crawledWebpage.Content, ChunkSplitters["#"]).ToList();
 
-            // Convert chunks into list of tokens
-            var encodedChunks = chunks.Select(c => Tokenizer.Encode(c)).ToList();
-
-            // Apply overlapping to chunks
-            for (var i = 0; i < chunks.Count - 1; i++)
-            {
-                // Retrieve the first [ChunkOverlap] tokens of next chunk
-                var overlap = encodedChunks[i + 1].Take(ChunkOverlap).ToList();
-
-                // Append those tokens to the current chunk
-                chunks[i] += Tokenizer.Decode(overlap) + "...";
-            }
+            ApplyOverlappingToChunks(ref chunks);
+            TrimChunks(ref chunks);
 
             // Convert chunks to documents
             output.AddRange(chunks.Select((chunk, i) => new Document
@@ -160,18 +147,22 @@ public class ChunkerClient
             FilterContent(ref content);
 
             var chunks = new List<string>();
-            var stack = new Stack<string>(content.Split(splitter).Reverse());
+            var stack = SplitContentIntoStack(content, splitter);
 
             // StringBuilder containing the chunk
             var sb = new StringBuilder();
             while (stack.Count > 0)
             {
-                var currentTokenCount = GetTokenCount(stack.Peek() + splitter);
-                var nextTokenCount = GetTokenCount(sb + stack.Peek() + splitter);
+                var currentCharacterCount = stack.Peek().Length;
+                var nextCharacterCount = sb.Length + stack.Peek().Length;
 
                 // If current chunk is too big
-                if (currentTokenCount > ChunkSize)
+                if (currentCharacterCount > ChunkSize)
                 {
+                    // If out of splitters, throw
+                    if (string.IsNullOrEmpty(ChunkSplitters[splitter]))
+                        throw new Exception("Reached last chunking splitter!");
+
                     // Split the chunk with the next splitter
                     foreach (var chunk in ChunkContentRecursive(stack.Pop(), ChunkSplitters[splitter]))
                         stack.Push(chunk);
@@ -180,7 +171,7 @@ public class ChunkerClient
                 }
 
                 // If chunk size limit is reached
-                if (currentTokenCount <= ChunkSize && nextTokenCount > ChunkSize)
+                if (currentCharacterCount <= ChunkSize && nextCharacterCount > ChunkSize)
                 {
                     // Register the chunk and move on to the next
                     chunks.Add(sb.ToString());
@@ -188,10 +179,11 @@ public class ChunkerClient
                     continue;
                 }
 
-                sb.Append(stack.Pop() + splitter);
+                // Add current string to string builder
+                sb.Append(stack.Pop());
             }
 
-            chunks.Add(sb.ToString().Trim('\n'));
+            chunks.Add(sb.ToString());
 
             if (splitter == ChunkSplitters["#"])
                 CombineSmallChunksWithAdjacent(ref chunks);
@@ -218,6 +210,22 @@ public class ChunkerClient
     }
 
     /// <summary>
+    ///     Split content by provided splitter and convert it to a stack.
+    /// </summary>
+    /// <param name="content">Content to split</param>
+    /// <param name="splitter">String to split content by</param>
+    /// <returns>Stack containing all split strings including the splitters</returns>
+    private static Stack<string> SplitContentIntoStack(string content, string splitter)
+    {
+        // Regex pattern, examples: (\.), (\!), (\n)
+        // Remove leading "\" for linebreaks
+        var pattern = @$"(\{(splitter[0] == '\\' ? splitter[1..] : splitter)})";
+        var chunks = Regex.Split(content, pattern).Reverse().Where(s => !string.IsNullOrEmpty(s));
+
+        return new Stack<string>(chunks);
+    }
+
+    /// <summary>
     ///     Searches for small chunks and combines them with the chunk next to it.
     ///     This eliminates documents in the database that
     ///     most likely does not contain any contextual information.
@@ -225,18 +233,19 @@ public class ChunkerClient
     /// <param name="chunks">List of strings that are chunks</param>
     private void CombineSmallChunksWithAdjacent(ref List<string> chunks)
     {
-        var smallChunkSize = ChunkSize / 4;
+        if (chunks.Count == 1)
+            return;
 
+        // Backwards search through chunks if there are more than one
         for (var i = chunks.Count - 1; i >= 0; i--)
         {
-            if (chunks.Count == 1)
-                break;
+            var chunkSize = chunks[i].Length;
 
-            var chunkTokenSize = GetTokenCount(chunks[i]);
-
-            if (chunkTokenSize > smallChunkSize)
+            // If chunk is not small, move on
+            if (chunkSize > ChunkOverlap)
                 continue;
 
+            // If the chunk is first, insert current to next
             if (i == 0)
             {
                 chunks[i + 1] = chunks[i] + chunks[i + 1];
@@ -245,26 +254,64 @@ public class ChunkerClient
                 continue;
             }
 
+            // Add current chunk to previous
             chunks[i - 1] += chunks[i];
             chunks.RemoveAt(i);
         }
     }
 
     /// <summary>
-    ///     Retrieve the amount of tokens of input.
+    ///     Apply overlapping to chunks with the purpose to contain context between chunks.
     /// </summary>
-    /// <param name="input">String to count tokens on</param>
-    /// <returns>Integer of amount of tokens of input</returns>
-    private int GetTokenCount(string input)
+    /// <param name="chunks">Reference to list of chunks to apply overlapping on</param>
+    private void ApplyOverlappingToChunks(ref List<string> chunks)
     {
-        try
-        {
-            return Tokenizer.Encode(input).Count;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Failed retrieval of token count!");
-            throw;
-        }
+        // Apply overlap for all chunks but last
+        for (var i = 0; i < chunks.Count - 1; i++)
+            chunks[i] += GetOverlapFromChunk(chunks[i + 1]);
+    }
+
+    /// <summary>
+    ///     Trim the sides of every string inside of provided list of chunks.
+    /// </summary>
+    /// <param name="chunks">Reference to the list of chunks</param>
+    private static void TrimChunks(ref List<string> chunks)
+    {
+        chunks = chunks.Select(c => c.Trim()).ToList();
+    }
+
+    /// <summary>
+    ///     Retrieve overlap substring from a chunk.
+    /// </summary>
+    /// <param name="chunk">Chunk to retrieve overlap from</param>
+    /// <returns>String of content that should overlap</returns>
+    private string GetOverlapFromChunk(string chunk)
+    {
+        var indexes = GetIndexesOfSentenceSplitters(chunk);
+
+        // Retrieve the index of the splitter closest to the chunk overlap limit
+        var sentenceSplitterIndex = indexes.OrderBy(n => Math.Abs(ChunkOverlap - n)).FirstOrDefault() + 1;
+
+        // If no sentence splitter was found
+        if (sentenceSplitterIndex == 1)
+            // Return the first [ChunkOverlap] characters
+            return chunk[..ChunkOverlap] + "...";
+
+        // Return overlap
+        return chunk[..sentenceSplitterIndex];
+    }
+
+    private HashSet<int> GetIndexesOfSentenceSplitters(string chunk)
+    {
+        var indexes = new HashSet<int>();
+        var startIndex = ChunkOverlap / 2;
+        var endIndex = startIndex + ChunkOverlap;
+
+        // Look for sentence splitters that are close to the chunk overlap limit
+        for (var i = startIndex; i <= endIndex && i < chunk.Length; i++)
+            if (SentenceSplitters.Contains(chunk[i]))
+                indexes.Add(i);
+
+        return indexes;
     }
 }
