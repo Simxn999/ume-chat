@@ -121,7 +121,8 @@ public class OpenAIEmbeddingsClient
             var embeddings = new List<EmbeddingItem>();
 
             // Batch documents based on [EmbeddingsBatchSize]
-            var batches = documents.Chunk(EmbeddingsBatchSize).Select(c => c.Select(d => d.Content));
+            var batches = documents.Chunk(EmbeddingsBatchSize)
+                                   .Select(c => c.Select(d => $"{d.Title}\n{d.URL}\n\n{d.Content}"));
 
             foreach (var batch in batches)
             {
