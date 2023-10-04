@@ -22,7 +22,7 @@ public class KeywordsClient
             Key = Variables.Get("TEXT_ANALYTICS_API_KEY");
             URL = Variables.Get("TEXT_ANALYTICS_URL");
             DefaultLanguage = Variables.Get("TEXT_ANALYTICS_DEFAULT_LANGUAGE");
-            LanguageURLSegment = Variables.Get("TEXT_ANALYTICS_LANGUAGE_URL_SEGMENT");
+            LanguageURLSegments = Variables.GetEnumerable("TEXT_ANALYTICS_LANGUAGE_URL_SEGMENTS");
             ExcludedLanguages = Variables.GetEnumerable("TEXT_ANALYTICS_EXCLUDED_LANGUAGES");
             KeywordsBatchSize = Variables.GetInt("TEXT_ANALYTICS_REQUEST_KEYWORDS_BATCH_SIZE");
             DetectLanguagesBatchSize = Variables.GetInt("TEXT_ANALYITCS_REQUEST_LANGUAGE_DETECTION_BATCH_SIZE");
@@ -51,9 +51,9 @@ public class KeywordsClient
     private string DefaultLanguage { get; }
 
     /// <summary>
-    ///     Segment of URLs where the language is not default/Swedish.
+    ///     Segments of URLs where the language is not default/Swedish.
     /// </summary>
-    private string LanguageURLSegment { get; }
+    private IEnumerable<string> LanguageURLSegments { get; }
 
     /// <summary>
     ///     Languages that are not supported by keywords extractor.
@@ -221,7 +221,7 @@ public class KeywordsClient
     {
         try
         {
-            return documents.Where(d => d.URL is not null && d.URL.Contains(LanguageURLSegment))
+            return documents.Where(d => d.URL is not null && LanguageURLSegments.Any(s => d.URL.Contains(s)))
                             .Select(d => new DetectLanguageInput(d.ID, d.Content))
                             .ToList();
         }
