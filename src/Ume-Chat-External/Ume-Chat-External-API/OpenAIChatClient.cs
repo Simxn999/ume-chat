@@ -228,7 +228,7 @@ public static class OpenAIChatClient
                    QueryType = QueryType,
                    SearchEndpoint = SearchEndpoint,
                    SearchKey = SearchKey,
-                   ShouldRestrictResultScope = false, // TODO: Should be true! Does not seem to work at the moment...
+                   ShouldRestrictResultScope = true,
                    Type = AzureChatExtensionType.AzureCognitiveSearch,
                    SemanticConfiguration = SemanticConfig
                };
