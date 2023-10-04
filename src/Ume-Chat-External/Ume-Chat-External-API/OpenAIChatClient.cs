@@ -73,6 +73,11 @@ public static class OpenAIChatClient
         new AzureKeyCredential(Variables.Get("COGNITIVESEARCH_API_KEY"));
 
     /// <summary>
+    ///     Key to Azure Cognitive Search.
+    /// </summary>
+    private static string SemanticConfig { get; } = Variables.Get("API_CHAT_REQUEST_SEMANTIC_CONFIG");
+
+    /// <summary>
     ///     Name of content field.
     /// </summary>
     private static string ContentField { get; } = Variables.Get("API_CHAT_REQUEST_CONTENT_FIELD");
@@ -110,7 +115,7 @@ public static class OpenAIChatClient
     /// <summary>
     ///     Type of query for chatbot to use in data retrieval.
     /// </summary>
-    private static AzureCognitiveSearchQueryType QueryType => AzureCognitiveSearchQueryType.VectorSimpleHybrid;
+    private static AzureCognitiveSearchQueryType QueryType => AzureCognitiveSearchQueryType.VectorSemanticHybrid;
 
     /// <summary>
     ///     Request a chat response from ChatGPT based on the messages provided.
@@ -224,7 +229,8 @@ public static class OpenAIChatClient
                    SearchEndpoint = SearchEndpoint,
                    SearchKey = SearchKey,
                    ShouldRestrictResultScope = false, // TODO: Should be true! Does not seem to work at the moment...
-                   Type = AzureChatExtensionType.AzureCognitiveSearch
+                   Type = AzureChatExtensionType.AzureCognitiveSearch,
+                   SemanticConfiguration = SemanticConfig
                };
     }
 
