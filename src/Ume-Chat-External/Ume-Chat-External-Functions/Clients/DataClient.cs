@@ -61,6 +61,11 @@ public class DataClient
     private KeywordsClient KeywordsClient { get; set; } = default!;
 
     /// <summary>
+    ///     Default groups used on documents.
+    /// </summary>
+    private IEnumerable<string> DefaultGroups { get; set; } = default!;
+
+    /// <summary>
     ///     Size of batches.
     /// </summary>
     private int BatchSize { get; set; }
@@ -129,6 +134,7 @@ public class DataClient
             ChunkerClient = new ChunkerClient(_logger);
             EmbeddingsClient = new EmbeddingsClient(_logger);
             KeywordsClient = new KeywordsClient(_logger);
+            DefaultGroups = Variables.GetEnumerable("DOCUMENT_DEFAULT_GROUPS");
             Index = await IndexClient.GetDocumentsForComparisonAsync();
             Sitemap = await sitemapper.GetSitemapAsync();
             SitemapItems = sitemapper.GetPages(Sitemap);
@@ -246,23 +252,27 @@ public class DataClient
             if (webpages.Count > 0)
                 documents = ChunkerClient.ChunkCrawledWebpages(webpages);
 
-            // Embeddings
             if (documents.Count > 0)
+            {
+                // Embeddings
                 documents = EmbeddingsClient.PopulateDocumentsWithEmbeddings(documents);
 
-            // Keywords
-            if (documents.Count > 0)
+                // Keywords
                 documents = KeywordsClient.PopulateDocumentsWithKeywords(documents);
+
+                // Groups
+                AddDefaultGroups(ref documents);
+
+                // Upload
+                await UploadDocumentsAsync(documents);
+            }
 
             // Delete
             if (batch.Count > 0)
                 documentsToDelete = GetOutdatedDocumentsFromBatch(batch);
+            
             if (documentsToDelete.Count > 0)
                 await DeleteDocumentsAsync(documentsToDelete);
-
-            // Upload
-            if (documents.Count > 0)
-                await UploadDocumentsAsync(documents);
 
             _logger.LogInformation("Batch {index} complete!", index);
         }
@@ -271,6 +281,15 @@ public class DataClient
             _logger.LogError(e, "Failed batch {index}!", index);
             throw;
         }
+    }
+
+    /// <summary>
+    ///     Adds the default group ids to referenced list of documents.
+    /// </summary>
+    /// <param name="documents">Reference to list of documents to apply groups to</param>
+    private void AddDefaultGroups(ref List<Document> documents)
+    {
+        documents.ForEach(d => d.GroupIDs = DefaultGroups);
     }
 
     /// <summary>

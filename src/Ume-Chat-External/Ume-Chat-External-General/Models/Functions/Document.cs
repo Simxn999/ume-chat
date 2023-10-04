@@ -58,6 +58,13 @@ public class Document
     public IEnumerable<string>? KeywordsContent { get; set; }
 
     /// <summary>
+    ///     Groups who has access to the current document.
+    /// </summary>
+    [JsonPropertyName("group_ids")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<string>? GroupIDs { get; set; }
+
+    /// <summary>
     ///     Date of the last time the webpage was updated.
     /// </summary>
     [JsonPropertyName("lastmod")]
