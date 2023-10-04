@@ -53,7 +53,6 @@ public class DataClient
     /// <summary>
     ///     Client for handling embeddings.
     /// </summary>
-    private OpenAIEmbeddingsClient OpenAIEmbeddingsClient { get; set; } = default!;
     private EmbeddingsClient EmbeddingsClient { get; set; } = default!;
 
     /// <summary>

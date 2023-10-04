@@ -38,9 +38,6 @@
         <Using Include="System.Threading.ExecutionContext" Alias="ExecutionContext"/>
     </ItemGroup>
     <ItemGroup>
-        <Folder Include="Clients\"/>
-    </ItemGroup>
-    <ItemGroup>
         <ProjectReference Include="..\..\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj"/>
         <ProjectReference Include="..\Ume-Chat-External-General\Ume-Chat-External-General.csproj"/>
     </ItemGroup>
