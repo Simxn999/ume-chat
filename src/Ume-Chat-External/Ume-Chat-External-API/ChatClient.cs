@@ -9,7 +9,7 @@ namespace Ume_Chat_External_API;
 /// <summary>
 ///     Client for handling chat requests to Azure OpenAI.
 /// </summary>
-public static class OpenAIChatClient
+public static class ChatClient
 {
     /// <summary>
     ///     Endpoint to Azure OpenAI.

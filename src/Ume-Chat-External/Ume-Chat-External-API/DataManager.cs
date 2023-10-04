@@ -24,7 +24,7 @@ public static class DataManager
         try
         {
             // Parse request input and populate with system message
-            var chatMessages = OpenAIChatClient.GetChatMessages(messages);
+            var chatMessages = ChatClient.GetChatMessages(messages);
 
             if (!stream)
                 // Not streaming response
@@ -48,7 +48,7 @@ public static class DataManager
     /// <returns>Assistant answer with citations</returns>
     private static async Task<ChatResponse> GetChatResponseAsync(IEnumerable<ChatMessage> messages)
     {
-        var chatResponse = await OpenAIChatClient.SendChatRequestAsync(messages);
+        var chatResponse = await ChatClient.SendChatRequestAsync(messages);
         chatResponse.DeclutterCitations();
 
         return chatResponse;
@@ -63,7 +63,7 @@ public static class DataManager
     {
         context.Response.Headers["Content-Type"] = "text/event-stream";
 
-        var chunks = await OpenAIChatClient.SendChatRequestStreamingAsync(messages);
+        var chunks = await ChatClient.SendChatRequestStreamingAsync(messages);
         await using var writer = new StreamWriter(context.Response.Body);
         var completeChatResponse = new ChatResponseExtended();
         var jsonOptions = new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
