@@ -78,9 +78,8 @@ public class KeywordsClient
     /// <summary>
     ///     Populate documents with extracted keywords based on Title & Content.
     /// </summary>
-    /// <param name="documents">Documents to populate & extract keywords</param>
-    /// <returns>List of populated documents</returns>
-    public List<Document> PopulateDocumentsWithKeywords(List<Document> documents)
+    /// <param name="documents">Reference to list of documents to populate & extract keywords</param>
+    public void PopulateDocumentsWithKeywords(ref List<Document> documents)
     {
         try
         {
@@ -99,8 +98,6 @@ public class KeywordsClient
                 document.KeywordsTitle = titleKeywordsTask.Result[document.URL ?? string.Empty];
                 document.KeywordsContent = contentKeywordsTask.Result[document.ID];
             }
-
-            return documents;
         }
         catch (Exception e)
         {

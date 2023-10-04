@@ -255,13 +255,13 @@ public class DataClient
             if (documents.Count > 0)
             {
                 // Embeddings
-                documents = EmbeddingsClient.PopulateDocumentsWithEmbeddings(documents);
+                EmbeddingsClient.PopulateDocumentsWithEmbeddings(ref documents);
 
                 // Keywords
-                documents = KeywordsClient.PopulateDocumentsWithKeywords(documents);
+                KeywordsClient.PopulateDocumentsWithKeywords(ref documents);
 
                 // Groups
-                AddDefaultGroups(ref documents);
+                PopulateDocumentsWithDefaultGroups(ref documents);
 
                 // Upload
                 await UploadDocumentsAsync(documents);
@@ -284,10 +284,10 @@ public class DataClient
     }
 
     /// <summary>
-    ///     Adds the default group ids to referenced list of documents.
+    ///     Populates documents with default group ids.
     /// </summary>
-    /// <param name="documents">Reference to list of documents to apply groups to</param>
-    private void AddDefaultGroups(ref List<Document> documents)
+    /// <param name="documents">Reference to list of documents to populate with groups</param>
+    private void PopulateDocumentsWithDefaultGroups(ref List<Document> documents)
     {
         documents.ForEach(d => d.GroupIDs = DefaultGroups);
     }

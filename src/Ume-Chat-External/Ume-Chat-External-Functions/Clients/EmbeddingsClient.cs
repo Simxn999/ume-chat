@@ -65,9 +65,8 @@ public class EmbeddingsClient
     /// <summary>
     ///     Populate documents with embeddings based on it's content.
     /// </summary>
-    /// <param name="documents">Documents to populate embeddings</param>
-    /// <returns>List of documents populated with embeddings</returns>
-    public List<Document> PopulateDocumentsWithEmbeddings(List<Document> documents)
+    /// <param name="documents">Reference to list of documents to populate with embeddings</param>
+    public void PopulateDocumentsWithEmbeddings(ref List<Document> documents)
     {
         _logger.LogInformation($"Retrieving embedding{Grammar.GetPlurality(documents.Count, "", "s")} for {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...",
                                documents.Count);
@@ -90,7 +89,6 @@ public class EmbeddingsClient
                 documents[i].Vector = embeddings[i].Embedding;
 
             _logger.LogInformation($"Retrieved embedding{Grammar.GetPlurality(documents.Count, "", "s")} for document{Grammar.GetPlurality(documents.Count, "", "s")}!");
-            return documents;
         }
         catch (Exception e)
         {
