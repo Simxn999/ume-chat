@@ -44,6 +44,20 @@ public class Document
     public IEnumerable<float>? Vector { get; set; }
 
     /// <summary>
+    ///     Keywords based on Title.
+    /// </summary>
+    [JsonPropertyName("keywords_title")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<string>? KeywordsTitle { get; set; }
+
+    /// <summary>
+    ///     Keywords based on Content.
+    /// </summary>
+    [JsonPropertyName("keywords_content")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<string>? KeywordsContent { get; set; }
+
+    /// <summary>
     ///     Date of the last time the webpage was updated.
     /// </summary>
     [JsonPropertyName("lastmod")]

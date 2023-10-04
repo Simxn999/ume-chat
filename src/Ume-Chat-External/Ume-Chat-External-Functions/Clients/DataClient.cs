@@ -56,6 +56,11 @@ public class DataClient
     private EmbeddingsClient EmbeddingsClient { get; set; } = default!;
 
     /// <summary>
+    ///     Client for handling keywords.
+    /// </summary>
+    private KeywordsClient KeywordsClient { get; set; } = default!;
+
+    /// <summary>
     ///     Size of batches.
     /// </summary>
     private int BatchSize { get; set; }
@@ -123,6 +128,7 @@ public class DataClient
             CrawlerClient = await CrawlerClient.CreateAsync(_logger);
             ChunkerClient = new ChunkerClient(_logger);
             EmbeddingsClient = new EmbeddingsClient(_logger);
+            KeywordsClient = new KeywordsClient(_logger);
             Index = await IndexClient.GetDocumentsForComparisonAsync();
             Sitemap = await sitemapper.GetSitemapAsync();
             SitemapItems = sitemapper.GetPages(Sitemap);
@@ -245,8 +251,8 @@ public class DataClient
                 documents = EmbeddingsClient.PopulateDocumentsWithEmbeddings(documents);
 
             // Keywords
-            // if (documents.Count > 0)
-            // documents = KeywordsClient.PopulateDocumentsWithKeywords(documents);
+            if (documents.Count > 0)
+                documents = KeywordsClient.PopulateDocumentsWithKeywords(documents);
 
             // Delete
             if (batch.Count > 0)
