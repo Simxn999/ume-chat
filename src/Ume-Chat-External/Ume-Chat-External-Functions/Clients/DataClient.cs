@@ -122,7 +122,6 @@ public class DataClient
             IndexClient = new IndexClient(_logger);
             CrawlerClient = await CrawlerClient.CreateAsync(_logger);
             ChunkerClient = new ChunkerClient(_logger);
-            OpenAIEmbeddingsClient = new OpenAIEmbeddingsClient(_logger);
             EmbeddingsClient = new EmbeddingsClient(_logger);
             Index = await IndexClient.GetDocumentsForComparisonAsync();
             Sitemap = await sitemapper.GetSitemapAsync();
