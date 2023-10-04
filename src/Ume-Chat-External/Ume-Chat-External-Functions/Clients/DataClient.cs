@@ -54,6 +54,7 @@ public class DataClient
     ///     Client for handling embeddings.
     /// </summary>
     private OpenAIEmbeddingsClient OpenAIEmbeddingsClient { get; set; } = default!;
+    private EmbeddingsClient EmbeddingsClient { get; set; } = default!;
 
     /// <summary>
     ///     Size of batches.
@@ -123,6 +124,7 @@ public class DataClient
             CrawlerClient = await CrawlerClient.CreateAsync(_logger);
             ChunkerClient = new ChunkerClient(_logger);
             OpenAIEmbeddingsClient = new OpenAIEmbeddingsClient(_logger);
+            EmbeddingsClient = new EmbeddingsClient(_logger);
             Index = await IndexClient.GetDocumentsForComparisonAsync();
             Sitemap = await sitemapper.GetSitemapAsync();
             SitemapItems = sitemapper.GetPages(Sitemap);
@@ -234,7 +236,7 @@ public class DataClient
 
             // Crawling
             if (batch.Count > 0)
-                webpages = (await CrawlerClient.CrawlSitemapItemsAsync(batch)).ToList();
+                webpages = CrawlerClient.CrawlSitemapItems(batch).ToList();
 
             // Chunking
             if (webpages.Count > 0)
@@ -242,7 +244,11 @@ public class DataClient
 
             // Embeddings
             if (documents.Count > 0)
-                documents = await OpenAIEmbeddingsClient.RetrieveEmbeddingsAsync(documents);
+                documents = EmbeddingsClient.PopulateDocumentsWithEmbeddings(documents);
+
+            // Keywords
+            // if (documents.Count > 0)
+            // documents = KeywordsClient.PopulateDocumentsWithKeywords(documents);
 
             // Delete
             if (batch.Count > 0)

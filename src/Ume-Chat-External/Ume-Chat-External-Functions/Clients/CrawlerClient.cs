@@ -59,30 +59,33 @@ public class CrawlerClient
     /// </summary>
     /// <param name="sitemapItems">Sitemap items to crawl</param>
     /// <returns>List of crawled webpages</returns>
-    public async Task<IList<CrawledWebpage>> CrawlSitemapItemsAsync(IList<SitemapItem> sitemapItems)
+    public IList<CrawledWebpage> CrawlSitemapItems(IList<SitemapItem> sitemapItems)
     {
-        _logger.LogInformation($"Crawling sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}...");
+        _logger.LogInformation($"Crawling {{Count}} sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}...",
+                               sitemapItems.Count);
 
         try
         {
-            var output = new List<CrawledWebpage>();
+            // Crawl every sitemap item synchronously
+            var tasks = sitemapItems.Select(CrawlSitemapItemAsync).ToList();
 
-            // Crawl every sitemap item and add it to the output list
-            for (var i = 0; i < sitemapItems.Count; i++)
-                output.Add(await CrawlSitemapItemAsync(sitemapItems[i], i + 1, sitemapItems.Count));
+            // Wait for every sitemap item to be crawled
+            Task.WaitAll(tasks.Cast<Task>().ToArray());
+
+            // Add the webpages to output
+            var output = tasks.Select(task => task.Result).ToList();
 
             var invalidWebpages = GetInvalidWebpages(output);
 
             // Remove webpages with invalid data
             output = output.Where(w => invalidWebpages.All(iw => iw.URL != w.URL)).ToList();
 
-            _logger.LogInformation($"Crawled {{count}} sitemap item{Grammar.GetPlurality(output.Count, "", "s")}!",
-                                   sitemapItems.Count);
+            _logger.LogInformation($"Crawled sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}!");
             return output;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed crawling of sitemap items!");
+            _logger.LogError(e, $"Failed crawling of sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}!");
             throw;
         }
     }
@@ -141,13 +144,9 @@ public class CrawlerClient
     ///     Crawl and retrieve content of sitemap item.
     /// </summary>
     /// <param name="sitemapItem">Sitemap item to crawl</param>
-    /// <param name="index">Current index of sitemap item in batch</param>
-    /// <param name="total">Total number of sitemap items in batch</param>
     /// <returns>Crawled webpage with content from webpage</returns>
-    private async Task<CrawledWebpage> CrawlSitemapItemAsync(SitemapItem sitemapItem, int index, int total)
+    private async Task<CrawledWebpage> CrawlSitemapItemAsync(SitemapItem sitemapItem)
     {
-        _logger.LogInformation($"{new ProgressString(index, total)} Crawling \"{{url}}\"...", sitemapItem.URL);
-
         try
         {
             await using var pageCrawler = await Browser.NewPageAsync();
@@ -220,6 +219,11 @@ public class CrawlerClient
         }
     }
 
+    /// <summary>
+    ///     Retrieve webpages that are empty or should be excluded based on ExcludedTitles.
+    /// </summary>
+    /// <param name="webpages">List of webpages to validate</param>
+    /// <returns>List of valid webpages</returns>
     private List<CrawledWebpage> GetInvalidWebpages(IEnumerable<CrawledWebpage> webpages)
     {
         var invalidWebpages = webpages.Where(w => string.IsNullOrEmpty(w.Title) ||

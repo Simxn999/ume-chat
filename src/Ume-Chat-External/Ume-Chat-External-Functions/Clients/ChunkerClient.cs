@@ -73,22 +73,25 @@ public class ChunkerClient
     /// <returns>List of documents each containing a chunk</returns>
     public List<Document> ChunkCrawledWebpages(IList<CrawledWebpage> crawledWebpages)
     {
-        _logger.LogInformation("Chunking crawled webpages...");
+        _logger.LogInformation($"Chunking {{Count}} webpage{Grammar.GetPlurality(crawledWebpages.Count, "", "s")}...",
+                               crawledWebpages.Count);
 
         try
         {
-            var output = new List<Document>();
+            // Chunk every webpage synchrnonously
+            var tasks = crawledWebpages.Select(w => Task.Run(() => ChunkCrawledWebpage(w))).ToList();
 
-            // Crawl every webpage and add it to the output list
-            for (var i = 0; i < crawledWebpages.Count; i++)
-                output.AddRange(ChunkCrawledWebpage(crawledWebpages[i], i + 1, crawledWebpages.Count));
+            // Wait for chunking to complete
+            Task.WaitAll(tasks.Cast<Task>().ToArray());
 
-            _logger.LogInformation("Chunked crawled webpages!");
+            var output = tasks.SelectMany(t => t.Result).ToList();
+
+            _logger.LogInformation($"Chunked webpage{Grammar.GetPlurality(crawledWebpages.Count, "", "s")}!");
             return output;
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed chunking crawled webpages!");
+            _logger.LogError(e, "Failed chunking webpages!");
             throw;
         }
     }
@@ -97,13 +100,9 @@ public class ChunkerClient
     ///     Splits the content of a webpage into chunks in the form of documents.
     /// </summary>
     /// <param name="crawledWebpage">CrawledWebpage to chunk</param>
-    /// <param name="index">Current index of webpage in batch</param>
-    /// <param name="total">Total number of webpages in batch</param>
     /// <returns>Enumerable of documents each containing a chunk</returns>
-    private IEnumerable<Document> ChunkCrawledWebpage(CrawledWebpage crawledWebpage, int index, int total)
+    private IEnumerable<Document> ChunkCrawledWebpage(CrawledWebpage crawledWebpage)
     {
-        _logger.LogInformation($"{new ProgressString(index, total)} Chunking \"{{url}}\"...", crawledWebpage.URL);
-
         try
         {
             var output = new List<Document>();
@@ -301,6 +300,12 @@ public class ChunkerClient
         return chunk[..sentenceSplitterIndex];
     }
 
+    /// <summary>
+    ///     <para>Search for and retrieve positions of sentence splitters close to ChunkOverlap inside of a chunk of text.</para>
+    ///     <para>Sentence splitters examples: '.', '!', '?'</para>
+    /// </summary>
+    /// <param name="chunk">Chunk of text</param>
+    /// <returns>HashSet with positions of sentence splitters in the chunk.</returns>
     private HashSet<int> GetIndexesOfSentenceSplitters(string chunk)
     {
         var indexes = new HashSet<int>();

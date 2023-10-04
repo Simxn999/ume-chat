@@ -12,13 +12,13 @@ namespace Ume_Chat_External_Functions.Clients;
 ///     Client for handling sitemap.
 /// </summary>
 /// <param name="logger">ILogger</param>
-[DebuggerDisplay("{SitemapURL}")]
+[DebuggerDisplay("{URL}")]
 public class SitemapClient(ILogger logger)
 {
     /// <summary>
     ///     URL to sitemap.
     /// </summary>
-    private string SitemapURL { get; } = Variables.Get("SITEMAP_URL");
+    private string URL { get; } = Variables.Get("SITEMAP_URL");
 
     /// <summary>
     ///     Namespace of sitemap.
@@ -42,7 +42,7 @@ public class SitemapClient(ILogger logger)
         try
         {
             using var httpClient = new HttpClient();
-            var dataStream = await httpClient.GetStreamAsync(SitemapURL);
+            var dataStream = await httpClient.GetStreamAsync(URL);
 
             // Decompress gzip
             await using var gzip = new GZipStream(dataStream, CompressionMode.Decompress);
