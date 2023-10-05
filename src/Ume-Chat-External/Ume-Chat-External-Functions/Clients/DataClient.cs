@@ -237,13 +237,13 @@ public class DataClient
         {
             if (batch.Count == 0)
                 return;
-            
+
             // Crawling
             var webpages = CrawlerClient.CrawlSitemapItems(batch).ToList();
 
             if (webpages.Count == 0)
                 return;
-            
+
             // Chunking
             var documents = ChunkerClient.ChunkCrawledWebpages(webpages);
 
