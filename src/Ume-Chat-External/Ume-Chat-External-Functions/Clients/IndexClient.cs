@@ -26,6 +26,8 @@ public class IndexClient
             Key = Variables.Get("COGNITIVE_SEARCH_API_KEY");
             URL = Variables.Get("COGNITIVE_SEARCH_URL");
             Index = Variables.Get("COGNITIVE_SEARCH_INDEX_NAME");
+            DefaultFields = Variables.GetEnumerable("COGNITIVE_SEARCH_INDEX_DEFAULT_FIELDS");
+            DefaultGroups = Variables.GetEnumerable("DOCUMENT_DEFAULT_GROUPS");
 
             var searchIndexClient = new SearchIndexClient(new Uri(URL), new AzureKeyCredential(Key));
             SearchClient = searchIndexClient.GetSearchClient(Index);
@@ -51,6 +53,16 @@ public class IndexClient
     ///     Name of database/index.
     /// </summary>
     private string Index { get; }
+
+    /// <summary>
+    ///     Default fields used with document retrieval.
+    /// </summary>
+    private IEnumerable<string> DefaultFields { get; }
+
+    /// <summary>
+    ///     Default groups used on documents.
+    /// </summary>
+    private IEnumerable<string> DefaultGroups { get; }
 
     /// <summary>
     ///     Client for handling the database/index.
@@ -83,20 +95,21 @@ public class IndexClient
     /// </summary>
     /// <param name="filter">Optional: Documents filter</param>
     /// <param name="select">Optional: Fields to retrieve along with documents</param>
+    /// <param name="size">Optional: Amount of documents to retrieve</param>
+    /// <param name="groups">Optional: Group of documents to retrieve</param>
     /// <returns>Enumerable of documents from database</returns>
     public async Task<IEnumerable<Document>> GetDocumentsAsync(string? filter = null,
-                                                               IEnumerable<string>? select = null)
+                                                               IEnumerable<string>? select = null,
+                                                               int? size = null,
+                                                               IEnumerable<string>? groups = null)
     {
         _logger.LogInformation("Retrieving documents...");
 
         try
         {
-            var options = new SearchOptions { Filter = filter ?? string.Empty };
-            foreach (var field in select ?? Enumerable.Empty<string>())
-                options.Select.Add(field);
+            var options = GetSearchOptions(filter, select, size, groups);
 
-            var result = await SearchClient.SearchAsync<Document>(string.Empty, options);
-            var documents = result.Value.GetResults().Select(item => item.Document).ToList();
+            var documents = await SearchAsync(options);
 
             _logger.LogInformation("Retrieved {count} documents!", documents.Count);
             return documents;
@@ -119,23 +132,10 @@ public class IndexClient
 
         try
         {
-            var options = new SearchOptions
-                          {
-                              // Necessary fields
-                              Select =
-                              {
-                                  "id",
-                                  "url",
-                                  "title",
-                                  "lastmod",
-                                  "chunk_id"
-                              },
-                              Size = documentsCount
-                          };
-            var result = await SearchClient.SearchAsync<Document>(string.Empty, options);
-            var documents = result.Value.GetResults().Select(item => item.Document).ToList();
+            var select = new[] { "lastmod" };
+            var options = GetSearchOptions(select: select, size: documentsCount);
 
-            return documents;
+            return await SearchAsync(options);
         }
         catch (Exception e)
         {
@@ -157,6 +157,87 @@ public class IndexClient
         catch (Exception e)
         {
             _logger.LogError(e, "Failed retrieval of document count!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Search the index with provided options.
+    /// </summary>
+    /// <param name="options">Search options</param>
+    /// <returns>List of documents found in index</returns>
+    private async Task<List<Document>> SearchAsync(SearchOptions options)
+    {
+        try
+        {
+            var result = await SearchClient.SearchAsync<Document>(string.Empty, options);
+            return result.Value.GetResults().Select(item => item.Document).ToList();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed index search!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve search options for index search.
+    /// </summary>
+    /// <param name="filter">Optional: Documents filter</param>
+    /// <param name="select">Optional: Fields to retrieve along with documents</param>
+    /// <param name="size">Optional: Amount of documents to retrieve</param>
+    /// <param name="groups">Optional: Group of documents to retrieve</param>
+    /// <returns>Configured SearchOptions</returns>
+    private SearchOptions GetSearchOptions(string? filter = null,
+                                           IEnumerable<string>? select = null,
+                                           int? size = null,
+                                           IEnumerable<string>? groups = null)
+    {
+        try
+        {
+            var options = new SearchOptions();
+
+            // Select
+            foreach (var defaultField in DefaultFields)
+                options.Select.Add(defaultField);
+
+            foreach (var field in select ?? Enumerable.Empty<string>())
+            {
+                if (options.Select.Contains(field))
+                    continue;
+
+                options.Select.Add(field);
+            }
+
+            // Size
+            options.Size = size;
+
+            // Filter & Groups
+            options.Filter = $"{GetGroupsFilter(groups)}{(filter is not null ? $"&{filter}" : string.Empty)}";
+
+            return options;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed configuration of SearchOptions!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve the proper filter format for document groups.
+    /// </summary>
+    /// <param name="groups">Enumerable of groups</param>
+    /// <returns>String as filter query for document groups</returns>
+    private string GetGroupsFilter(IEnumerable<string>? groups = null)
+    {
+        try
+        {
+            return $"group_ids/any(g:search.in(g, '{string.Join(", ", groups ?? DefaultGroups)}'))";
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrieval of groups filter!");
             throw;
         }
     }
