@@ -84,10 +84,7 @@ public class ChunkerClient
             // Wait for chunking to complete
             Task.WaitAll(tasks.Cast<Task>().ToArray());
 
-            var output = tasks.SelectMany(t => t.Result).ToList();
-
-            _logger.LogInformation($"Chunked webpage{Grammar.GetPlurality(crawledWebpages.Count, "", "s")}!");
-            return output;
+            return tasks.SelectMany(t => t.Result).ToList();
         }
         catch (Exception e)
         {

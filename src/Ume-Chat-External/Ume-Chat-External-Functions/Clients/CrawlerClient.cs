@@ -31,7 +31,7 @@ public class CrawlerClient
     /// <summary>
     ///     Enumerable of titles that are irrelevant for the chatbot.
     /// </summary>
-    private IEnumerable<string> ExcludedTitles { get; } = Variables.GetEnumerable("CRAWLER_EXCLUDED_TITLES").ToList();
+    private IEnumerable<string> ExcludedTitles { get; set; } = default!;
 
     /// <summary>
     ///     Create CrawlerClient and initialize properties asynchronously.
@@ -77,11 +77,8 @@ public class CrawlerClient
 
             var invalidWebpages = GetInvalidWebpages(output);
 
-            // Remove webpages with invalid data
-            output = output.Where(w => invalidWebpages.All(iw => iw.URL != w.URL)).ToList();
-
-            _logger.LogInformation($"Crawled sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}!");
-            return output;
+            // Remove webpages with invalid data & return
+            return output.Where(w => invalidWebpages.All(iw => iw.URL != w.URL)).ToList();
         }
         catch (Exception e)
         {
@@ -108,6 +105,7 @@ public class CrawlerClient
         {
             Browser = await GetBrowserAsync();
             TitleSuffix = Variables.Get("CRAWLER_TITLE_SUFFIX");
+            ExcludedTitles = Variables.GetEnumerable("CRAWLER_EXCLUDED_TITLES").ToList();
         }
         catch (Exception e)
         {
@@ -231,8 +229,12 @@ public class CrawlerClient
                                                   ExcludedTitles.Any(t => t.Equals(w.Title)))
                                       .ToList();
 
-        foreach (var invalidWebpage in invalidWebpages)
-            _logger.LogInformation("Sitemap item was determined invalid! {URL}", invalidWebpage.URL);
+        if (invalidWebpages.Count > 0)
+            _logger.LogInformation($"{{Count}} sitemap item{Grammar.GetPlurality(invalidWebpages.Count, "", "s")} {Grammar.GetPlurality(invalidWebpages.Count, "was", "were")} determined invalid!",
+                                   invalidWebpages.Count);
+
+        for (var i = 0; i < invalidWebpages.Count; i++)
+            _logger.LogInformation($"Invalid sitemap item #{i + 1}: {{URL}}", invalidWebpages[i].URL);
 
         return invalidWebpages;
     }

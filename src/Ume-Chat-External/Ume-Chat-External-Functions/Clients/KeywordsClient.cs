@@ -101,7 +101,7 @@ public class KeywordsClient
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed population of keywords!");
+            _logger.LogError(e, "Failed populating documents with keywords!");
             throw;
         }
     }
@@ -272,7 +272,7 @@ public class KeywordsClient
     ///     <para>Title = TextDocumentInput where Id = Document.URL</para>
     ///     <para>Content = TextDocumentInput where Id = Document.ID</para>
     /// </returns>
-    /// <exception cref="Exception">Failed retrieval of TextDocumentInput!</exception>
+    /// <exception cref="Exception">KeywordsType was incorrect!</exception>
     private TextDocumentInput ConvertDocumentToTextDocumentInput(Document document, KeywordsType type)
     {
         try
@@ -282,7 +282,7 @@ public class KeywordsClient
                                         // URL because documents with the same URL has the same Title
                                         KeywordsType.Title => new TextDocumentInput(document.URL, document.Title),
                                         KeywordsType.Content => new TextDocumentInput(document.ID, document.Content),
-                                        _ => throw new Exception("Failed retrieval of TextDocumentInput!")
+                                        _ => throw new Exception("KeywordsType was incorrect!")
                                     };
             textDocumentInput.Language = DefaultLanguage;
 

@@ -109,10 +109,7 @@ public class IndexClient
         {
             var options = GetSearchOptions(filter, select, size, groups);
 
-            var documents = await SearchAsync(options);
-
-            _logger.LogInformation("Retrieved {count} documents!", documents.Count);
-            return documents;
+            return await SearchAsync(options);
         }
         catch (Exception e)
         {

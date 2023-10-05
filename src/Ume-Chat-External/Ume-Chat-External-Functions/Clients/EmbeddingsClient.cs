@@ -68,7 +68,7 @@ public class EmbeddingsClient
     /// <param name="documents">Reference to list of documents to populate with embeddings</param>
     public void PopulateDocumentsWithEmbeddings(ref List<Document> documents)
     {
-        _logger.LogInformation($"Retrieving embedding{Grammar.GetPlurality(documents.Count, "", "s")} for {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...",
+        _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with embeddings...",
                                documents.Count);
 
         try
@@ -87,12 +87,10 @@ public class EmbeddingsClient
             // Populate documents with embeddings
             for (var i = 0; i < embeddings.Count; i++)
                 documents[i].Vector = embeddings[i].Embedding;
-
-            _logger.LogInformation($"Retrieved embedding{Grammar.GetPlurality(documents.Count, "", "s")} for document{Grammar.GetPlurality(documents.Count, "", "s")}!");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed retrieval of embeddings!");
+            _logger.LogError(e, "Failed populating documents with embeddings!");
             throw;
         }
     }
@@ -102,9 +100,17 @@ public class EmbeddingsClient
     /// </summary>
     /// <param name="document">Document to get string content from</param>
     /// <returns>String containing Title, URL & Content of provided document</returns>
-    private static string GetEmbeddingContent(Document document)
+    private string GetEmbeddingContent(Document document)
     {
-        return $"{document.Title}\n{document.URL}\n\n###\n\n{document.Content}";
+        try
+        {
+            return $"{document.Title}\n{document.URL}\n\n###\n\n{document.Content}";
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrival of embedding content!");
+            throw;
+        }
     }
 
     /// <summary>
@@ -114,6 +120,14 @@ public class EmbeddingsClient
     /// <returns>Response with Embeddings</returns>
     private async Task<Response<Embeddings>> GetEmbeddingsAsync(IEnumerable<string> batch)
     {
-        return await Client.GetEmbeddingsAsync(EmbeddingsDeployment, new EmbeddingsOptions(batch));
+        try
+        {
+            return await Client.GetEmbeddingsAsync(EmbeddingsDeployment, new EmbeddingsOptions(batch));
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrieval of embeddings!");
+            throw;
+        }
     }
 }

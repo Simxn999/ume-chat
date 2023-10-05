@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using Azure.Search.Documents.Models;
 using Microsoft.Extensions.Logging;
 using Ume_Chat_External_General;
@@ -97,6 +98,8 @@ public class DataClient
     public async Task SynchronizeAsync()
     {
         _logger.LogInformation("Synchronizing database with sitemap...");
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
 
         try
         {
@@ -112,11 +115,14 @@ public class DataClient
                 await RunBatches(pageBatches);
             }
 
-            _logger.LogInformation("Synchronization successfull!");
+            stopwatch.Stop();
+            _logger.LogInformation($"Synchronization successfull! {Math.Round(stopwatch.Elapsed.TotalSeconds, 2).ToString(CultureInfo.InvariantCulture)}s");
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Synchronization failed!");
+            stopwatch.Stop();
+            _logger.LogError(e,
+                             $"Synchronization failed! {Math.Round(stopwatch.Elapsed.TotalSeconds, 2).ToString(CultureInfo.InvariantCulture)}s");
             throw;
         }
     }
@@ -156,22 +162,18 @@ public class DataClient
         _logger.LogInformation("Retrieving items from sitemap to update...");
         try
         {
-            var sitemapItems = SitemapItems.Where(i =>
-                                                  {
-                                                      // Retrieve document from database
-                                                      var document = Index.FirstOrDefault(d => d.URL == i.URL);
+            return SitemapItems.Where(i =>
+                                      {
+                                          // Retrieve document from database
+                                          var document = Index.FirstOrDefault(d => d.URL == i.URL);
 
-                                                      // Sitemap item should be updated if:
-                                                      //    Document.URL does not exist in database
-                                                      //        OR
-                                                      //    Webpage has been updated since it was uploaded to database
-                                                      return document is null || document.LastModified < i.LastModified;
-                                                  })
-                                           .ToList();
-
-            _logger.LogInformation($"Retrieved {{count}} item{Grammar.GetPlurality(sitemapItems.Count, "", "s")} from sitemap!",
-                                   sitemapItems.Count);
-            return sitemapItems;
+                                          // Sitemap item should be updated if:
+                                          //    Document.URL does not exist in database
+                                          //        OR
+                                          //    Webpage has been updated since it was uploaded to database
+                                          return document is null || document.LastModified < i.LastModified;
+                                      })
+                               .ToList();
         }
         catch (Exception e)
         {
@@ -185,15 +187,14 @@ public class DataClient
     /// </summary>
     /// <param name="list">Enumerable to batch</param>
     /// <returns>List of lists of sitemap items</returns>
-    private List<List<SitemapItem>> Batch(IEnumerable<SitemapItem> list)
+    private List<List<SitemapItem>> Batch(ICollection<SitemapItem> list)
     {
-        _logger.LogInformation("Batching sitemap items...");
+        _logger.LogInformation($"Batching {{Count}} sitemap item{Grammar.GetPlurality(list.Count, "", "s")}...",
+                               list.Count);
 
         try
         {
-            var batches = list.Chunk(BatchSize).Select(b => b.ToList()).ToList();
-
-            return batches;
+            return list.Chunk(BatchSize).Select(b => b.ToList()).ToList();
         }
         catch (Exception e)
         {
@@ -208,18 +209,12 @@ public class DataClient
     /// <param name="batches">Batches/List of lists of sitemap items to execute</param>
     private async Task RunBatches(List<List<SitemapItem>> batches)
     {
-        _logger.LogInformation($"Running {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}...",
-                               batches.Count);
-
         try
         {
             for (var i = 0; i < batches.Count; i++)
                 await RunBatch(batches[i], i + 1, batches.Count);
 
             await CrawlerClient.CloseBrowserAsync();
-
-            _logger.LogInformation($"Successfully ran {{count}} batch{Grammar.GetPlurality(batches.Count, "", "es")}!",
-                                   batches.Count);
         }
         catch (Exception e)
         {
@@ -240,41 +235,40 @@ public class DataClient
 
         try
         {
-            var webpages = new List<CrawledWebpage>();
-            var documents = new List<Document>();
-            var documentsToDelete = new List<Document>();
-
+            if (batch.Count == 0)
+                return;
+            
             // Crawling
-            if (batch.Count > 0)
-                webpages = CrawlerClient.CrawlSitemapItems(batch).ToList();
+            var webpages = CrawlerClient.CrawlSitemapItems(batch).ToList();
 
+            if (webpages.Count == 0)
+                return;
+            
             // Chunking
-            if (webpages.Count > 0)
-                documents = ChunkerClient.ChunkCrawledWebpages(webpages);
+            var documents = ChunkerClient.ChunkCrawledWebpages(webpages);
 
-            if (documents.Count > 0)
-            {
-                // Embeddings
-                EmbeddingsClient.PopulateDocumentsWithEmbeddings(ref documents);
+            if (documents.Count == 0)
+                return;
 
-                // Keywords
-                KeywordsClient.PopulateDocumentsWithKeywords(ref documents);
+            // Embeddings
+            EmbeddingsClient.PopulateDocumentsWithEmbeddings(ref documents);
 
-                // Groups
-                PopulateDocumentsWithDefaultGroups(ref documents);
+            // Keywords
+            KeywordsClient.PopulateDocumentsWithKeywords(ref documents);
 
-                // Upload
-                await UploadDocumentsAsync(documents);
-            }
+            // Groups
+            PopulateDocumentsWithDefaultGroups(ref documents);
+
+            // Upload
+            await UploadDocumentsAsync(documents);
 
             // Delete
-            if (batch.Count > 0)
-                documentsToDelete = GetOutdatedDocumentsFromBatch(batch);
-            
-            if (documentsToDelete.Count > 0)
-                await DeleteDocumentsAsync(documentsToDelete);
+            var documentsToDelete = GetOutdatedDocumentsFromBatch(batch);
 
-            _logger.LogInformation("Batch {index} complete!", index);
+            if (documentsToDelete.Count == 0)
+                return;
+
+            await DeleteDocumentsAsync(documentsToDelete);
         }
         catch (Exception e)
         {
@@ -289,7 +283,18 @@ public class DataClient
     /// <param name="documents">Reference to list of documents to populate with groups</param>
     private void PopulateDocumentsWithDefaultGroups(ref List<Document> documents)
     {
-        documents.ForEach(d => d.GroupIDs = DefaultGroups);
+        try
+        {
+            _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with default groups...",
+                                   documents.Count);
+
+            documents.ForEach(d => d.GroupIDs = DefaultGroups);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed populating documents with default groups!");
+            throw;
+        }
     }
 
     /// <summary>
@@ -302,11 +307,7 @@ public class DataClient
         _logger.LogInformation("Retrieving outdated documents from batch...");
         try
         {
-            var documents = Index.Where(d => batch.Any(item => item.URL == d.URL)).ToList();
-
-            _logger.LogInformation($"Retrieved {{count}} outdated document{Grammar.GetPlurality(documents.Count, "", "s")}!",
-                                   documents.Count);
-            return documents;
+            return Index.Where(d => batch.Any(item => item.URL == d.URL)).ToList();
         }
         catch (Exception e)
         {
@@ -325,11 +326,7 @@ public class DataClient
         _logger.LogInformation("Retrieving invalid documents...");
         try
         {
-            var documents = Index.Where(d => SitemapItems.All(item => d.URL != item.URL)).ToList();
-
-            _logger.LogInformation($"Retrieved {{count}} invalid document{Grammar.GetPlurality(documents.Count, "", "s")}!",
-                                   documents.Count);
-            return documents;
+            return Index.Where(d => SitemapItems.All(item => d.URL != item.URL)).ToList();
         }
         catch (Exception e)
         {
@@ -349,11 +346,10 @@ public class DataClient
 
         try
         {
-            if (documents.Count > 0)
-                await IndexClient.IndexDocumentsAsync(documents, IndexDocumentsAction.Delete);
+            if (documents.Count == 0)
+                return;
 
-            _logger.LogInformation($"Deleted {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}!",
-                                   documents.Count);
+            await IndexClient.IndexDocumentsAsync(documents, IndexDocumentsAction.Delete);
         }
         catch (Exception e)
         {
@@ -373,11 +369,10 @@ public class DataClient
 
         try
         {
-            if (documents.Count > 0)
-                await IndexClient.IndexDocumentsAsync(documents, IndexDocumentsAction.MergeOrUpload);
+            if (documents.Count == 0)
+                return;
 
-            _logger.LogInformation($"Uploaded {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}!",
-                                   documents.Count);
+            await IndexClient.IndexDocumentsAsync(documents, IndexDocumentsAction.MergeOrUpload);
         }
         catch (Exception e)
         {
