@@ -112,7 +112,7 @@ public class DataClient
             if (sitemapItemsToUpdate.Count > 0)
             {
                 var pageBatches = Batch(sitemapItemsToUpdate);
-                await RunBatches(pageBatches);
+                await RunBatchesAsync(pageBatches);
             }
 
             stopwatch.Stop();
@@ -207,12 +207,12 @@ public class DataClient
     ///     Execute batches.
     /// </summary>
     /// <param name="batches">Batches/List of lists of sitemap items to execute</param>
-    private async Task RunBatches(List<List<SitemapItem>> batches)
+    private async Task RunBatchesAsync(List<List<SitemapItem>> batches)
     {
         try
         {
             for (var i = 0; i < batches.Count; i++)
-                await RunBatch(batches[i], i + 1, batches.Count);
+                await RunBatchAsync(batches[i], i + 1, batches.Count);
 
             await CrawlerClient.CloseBrowserAsync();
         }
@@ -229,7 +229,7 @@ public class DataClient
     /// <param name="batch">Batch/List of sitemap items to execute.</param>
     /// <param name="index">Current index of batch in batches</param>
     /// <param name="total">Total number of batches</param>
-    private async Task RunBatch(IList<SitemapItem> batch, int index, int total)
+    private async Task RunBatchAsync(IList<SitemapItem> batch, int index, int total)
     {
         _logger.LogInformation($"{new ProgressString(index, total)} Running batch...");
 
