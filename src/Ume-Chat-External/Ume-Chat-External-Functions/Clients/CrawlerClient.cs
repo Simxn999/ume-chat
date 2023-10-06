@@ -174,7 +174,7 @@ public class CrawlerClient
         try
         {
             const string script =
-                """document.querySelectorAll('main [aria-expanded="false"]').forEach(b => b?.click())""";
+                """document.querySelectorAll('main [aria-expanded="false"]:not([aria-controls="sol-toolbar-box__share"])').forEach(b => b?.click())""";
             await page.EvaluateExpressionAsync(script);
         }
         catch (Exception e)
