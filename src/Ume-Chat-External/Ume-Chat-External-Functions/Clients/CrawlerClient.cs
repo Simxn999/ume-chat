@@ -150,6 +150,7 @@ public class CrawlerClient
             await using var pageCrawler = await Browser.NewPageAsync();
             await pageCrawler.GoToAsync(sitemapItem.URL);
 
+            await ExpandElementsAsync(pageCrawler);
             var title = await RetrieveTitleOfPageAsync(pageCrawler);
             var content = await RetrieveContentOnPageAsync(pageCrawler);
 
@@ -160,6 +161,24 @@ public class CrawlerClient
         catch (Exception e)
         {
             _logger.LogError(e, "Failed crawling \"{url}\"!", sitemapItem.URL);
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Expand all html elements that are expandable.
+    /// </summary>
+    /// <param name="page">PuppeteerSharp page to expand elements on</param>
+    private async Task ExpandElementsAsync(IPage page)
+    {
+        try
+        {
+            const string script = """document.querySelectorAll('[aria-expanded="false"]').forEach(b => b?.click())""";
+            await page.EvaluateExpressionAsync(script);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed expanding elements!");
             throw;
         }
     }
