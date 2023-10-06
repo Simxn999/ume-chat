@@ -1,6 +1,4 @@
-﻿using System.Text.Encodings.Web;
-using System.Text.Json;
-using System.Text.Unicode;
+﻿using System.Text.Json;
 using Azure.AI.OpenAI;
 using Ume_Chat_External_General.Models.API.Request;
 using Ume_Chat_External_General.Models.API.Response;
@@ -23,15 +21,12 @@ public static class DataManager
     {
         try
         {
-            // Parse request input and populate with system message
-            var chatMessages = ChatClient.GetChatMessages(messages);
-
             if (!stream)
                 // Not streaming response
-                return Results.Ok(await GetChatResponseAsync(chatMessages));
+                return Results.Ok(await GetChatResponseAsync(messages));
 
             // Streaming response
-            await GetChatResponseStreamingAsync(context, chatMessages);
+            // await GetChatResponseStreamingAsync(context, messages);
 
             return Results.Empty;
         }
@@ -46,7 +41,7 @@ public static class DataManager
     /// </summary>
     /// <param name="messages">Messages</param>
     /// <returns>Assistant answer with citations</returns>
-    private static async Task<ChatResponse> GetChatResponseAsync(IEnumerable<ChatMessage> messages)
+    private static async Task<ChatResponse> GetChatResponseAsync(IEnumerable<RequestMessage> messages)
     {
         var chatResponse = await ChatClient.SendChatRequestAsync(messages);
         chatResponse.DeclutterCitations();
@@ -59,39 +54,39 @@ public static class DataManager
     /// </summary>
     /// <param name="context">HttpContext used for streaming the response</param>
     /// <param name="messages">Messages</param>
-    private static async Task GetChatResponseStreamingAsync(HttpContext context, IEnumerable<ChatMessage> messages)
-    {
-        context.Response.Headers["Content-Type"] = "text/event-stream";
-
-        var chunks = await ChatClient.SendChatRequestStreamingAsync(messages);
-        await using var writer = new StreamWriter(context.Response.Body);
-        var completeChatResponse = new ChatResponseExtended();
-        var jsonOptions = new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
-
-        // Writes chunks to response & compiles a complete response object
-        await foreach (var chunk in chunks)
-        {
-            // Write chunk to response
-            var chunkChatResponse = await WriteChunkToStreamAsync(chunk, writer, jsonOptions);
-
-            // Compile complete chat response
-
-            if (chunkChatResponse.Citations is not null)
-                completeChatResponse.Citations = chunkChatResponse.Citations;
-
-            if (chunkChatResponse.Message is not null)
-                completeChatResponse.Message += chunkChatResponse.Message;
-        }
-
-        // Indicate end of stream
-        await WriteEndToStreamAsync(writer);
-
-        // Declutter compiled chat response
-        completeChatResponse.DeclutterCitations();
-
-        // Write compiled chat response
-        await WriteObjectToStreamAsync(completeChatResponse, writer, jsonOptions);
-    }
+    // private static async Task GetChatResponseStreamingAsync(HttpContext context, IEnumerable<ChatMessage> messages)
+    // {
+    //     context.Response.Headers["Content-Type"] = "text/event-stream";
+    //
+    //     var chunks = await ChatClient.SendChatRequestStreamingAsync(messages);
+    //     await using var writer = new StreamWriter(context.Response.Body);
+    //     var completeChatResponse = new ChatResponseExtended();
+    //     var jsonOptions = new JsonSerializerOptions { Encoder = JavaScriptEncoder.Create(UnicodeRanges.All) };
+    //
+    //     // Writes chunks to response & compiles a complete response object
+    //     await foreach (var chunk in chunks)
+    //     {
+    //         // Write chunk to response
+    //         var chunkChatResponse = await WriteChunkToStreamAsync(chunk, writer, jsonOptions);
+    //
+    //         // Compile complete chat response
+    //
+    //         if (chunkChatResponse.Citations is not null)
+    //             completeChatResponse.Citations = chunkChatResponse.Citations;
+    //
+    //         if (chunkChatResponse.Message is not null)
+    //             completeChatResponse.Message += chunkChatResponse.Message;
+    //     }
+    //
+    //     // Indicate end of stream
+    //     await WriteEndToStreamAsync(writer);
+    //
+    //     // Declutter compiled chat response
+    //     completeChatResponse.DeclutterCitations();
+    //
+    //     // Write compiled chat response
+    //     await WriteObjectToStreamAsync(completeChatResponse, writer, jsonOptions);
+    // }
 
     /// <summary>
     ///     Writes a message chunk to the response.

@@ -115,14 +115,31 @@ public static class Variables
         }
         catch (Exception e)
         {
-            if (_logger is null)
-            {
-                Console.WriteLine("Failed retrieval of enumerable!");
-                Console.WriteLine(e);
-                throw;
-            }
+            Error(e);
+            throw;
+        }
+    }
 
-            _logger.LogError(e, "Failed retrieval of enumerable!");
+    /// <summary>
+    ///     Retrieve environment variable as boolean from app configuration.
+    /// </summary>
+    /// <param name="key">Variable name</param>
+    /// <returns>Variable value as bool</returns>
+    /// <exception cref="Exception">Variable not found exception</exception>
+    public static bool GetBool(string key)
+    {
+        try
+        {
+            if (_configuration is null)
+                throw new Exception("Invalid configuration!");
+
+            var value = _configuration[key] ?? throw new Exception("Variable not found!");
+
+            return bool.Parse(value);
+        }
+        catch (Exception e)
+        {
+            Error(e);
             throw;
         }
     }
