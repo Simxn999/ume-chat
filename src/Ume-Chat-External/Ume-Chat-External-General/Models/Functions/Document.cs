@@ -30,6 +30,13 @@ public class Document
     public string? Title { get; set; }
 
     /// <summary>
+    ///     Path of document.
+    /// </summary>
+    [JsonPropertyName("path")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? Path { get; set; }
+
+    /// <summary>
     ///     Content of document.
     /// </summary>
     [JsonPropertyName("content")]
@@ -49,6 +56,13 @@ public class Document
     [JsonPropertyName("keywords_title")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public IEnumerable<string>? KeywordsTitle { get; set; }
+
+    /// <summary>
+    ///     Keywords based on Path.
+    /// </summary>
+    [JsonPropertyName("keywords_path")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public IEnumerable<string>? KeywordsPath { get; set; }
 
     /// <summary>
     ///     Keywords based on Content.

@@ -153,8 +153,9 @@ public class CrawlerClient
             await ExpandElementsAsync(pageCrawler);
             var title = await RetrieveTitleAsync(pageCrawler);
             var content = await RetrieveContentAsync(pageCrawler);
+            var path = await RetrievePathAsync(pageCrawler) ?? title;
 
-            var output = new CrawledWebpage(sitemapItem.URL, title, content, sitemapItem.LastModified);
+            var output = new CrawledWebpage(sitemapItem.URL, title, content, path, sitemapItem.LastModified);
 
             return output;
         }
@@ -237,6 +238,92 @@ public class CrawlerClient
         }
     }
 
+    /// <summary>
+    ///     Retrieve the path of a webpage.
+    /// </summary>
+    /// <param name="page">PuppeteerSharp page to retrieve path from</param>
+    /// <returns>Path of webpage or null if it is homepage</returns>
+    private async Task<string?> RetrievePathAsync(IPage page)
+    {
+        try
+        {
+            var breadcrumbs = await RetrieveBreadcrumbsAsync(page);
+
+            if (breadcrumbs is null)
+                return null;
+
+            var homepage = await RetrieveHomepageTitleAsync(page);
+
+            breadcrumbs = breadcrumbs.Replace("Startsida", homepage + ' ').Replace(" \n", " / ");
+
+            return breadcrumbs;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrieval of path!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     <para>Retrieve breadcrumbs found on webpage.</para>
+    ///     <para>Example: "Umeå kommun / Kommun och politik / Kommunfakta"</para>
+    /// </summary>
+    /// <param name="page">PuppeteerSharp page to retrieve breadcrumbs from</param>
+    /// <returns>Breadcrumbs found on webpage or null if none were found</returns>
+    private async Task<string?> RetrieveBreadcrumbsAsync(IPage page)
+    {
+        try
+        {
+            const string selector = ".sol-breadcrumbs.sol-ul";
+            const string function = "e => e?.innerText";
+
+            var element = await page.QuerySelectorAsync(selector);
+            var breadcrumbs = await page.EvaluateFunctionAsync<string?>(function, element);
+
+            return breadcrumbs;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrieval of breadcrumbs!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve the title of the homepage of the current subpage.
+    /// </summary>
+    /// <param name="page">PuppeteerSharp page to retrieve homepage title from</param>
+    /// <returns>Title of homepage of current subpage</returns>
+    /// <exception cref="Exception">Could not find homepage!</exception>
+    private async Task<string> RetrieveHomepageTitleAsync(IPage page)
+    {
+        try
+        {
+            const string selector = ".sol-top-logo";
+            const string script = "e => e?.href";
+
+            var element = await page.QuerySelectorAsync(selector);
+            var homepageURL = await page.EvaluateFunctionAsync<string?>(script, element);
+
+            if (homepageURL is null)
+                throw new Exception("Could not find homepage!");
+
+            await page.GoToAsync(homepageURL);
+
+            var homepageTitle = await RetrieveTitleAsync(page);
+
+            await page.GoBackAsync();
+
+            return homepageTitle;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrieval of homepage title!");
+            throw;
+        }
+    }
+    
     /// <summary>
     ///     Retrieve webpages that are empty or should be excluded based on ExcludedTitles.
     /// </summary>

@@ -96,15 +96,15 @@ public class EmbeddingsClient
     }
 
     /// <summary>
-    ///     Retrieve a string containing Title, URL & Content of a provided document.
+    ///     Retrieve a string containing Title, URL, Path & Content of a provided document.
     /// </summary>
     /// <param name="document">Document to get string content from</param>
-    /// <returns>String containing Title, URL & Content of provided document</returns>
+    /// <returns>String containing Title, URL, Path & Content of provided document</returns>
     private string GetEmbeddingContent(Document document)
     {
         try
         {
-            return $"{document.Title}\n{document.URL}\n\n###\n\n{document.Content}";
+            return $"{document.Title}\n{document.URL}\n{document.Path}\n\n###\n\n{document.Content}";
         }
         catch (Exception e)
         {

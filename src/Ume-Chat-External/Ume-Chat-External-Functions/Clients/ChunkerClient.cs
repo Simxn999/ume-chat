@@ -115,6 +115,7 @@ public class ChunkerClient
                                                         {
                                                             URL = crawledWebpage.URL,
                                                             Title = crawledWebpage.Title,
+                                                            Path = crawledWebpage.Path,
                                                             Content = chunk,
                                                             ChunkID = i,
                                                             LastModified = crawledWebpage.LastModified
