@@ -151,8 +151,8 @@ public class CrawlerClient
             await pageCrawler.GoToAsync(sitemapItem.URL);
 
             await ExpandElementsAsync(pageCrawler);
-            var title = await RetrieveTitleOfPageAsync(pageCrawler);
-            var content = await RetrieveContentOnPageAsync(pageCrawler);
+            var title = await RetrieveTitleAsync(pageCrawler);
+            var content = await RetrieveContentAsync(pageCrawler);
 
             var output = new CrawledWebpage(sitemapItem.URL, title, content, sitemapItem.LastModified);
 
@@ -189,7 +189,7 @@ public class CrawlerClient
     /// </summary>
     /// <param name="page">PuppeteerSharp page to retrieve title from</param>
     /// <returns>Title of webpage</returns>
-    private async Task<string> RetrieveTitleOfPageAsync(IPage page)
+    private async Task<string> RetrieveTitleAsync(IPage page)
     {
         try
         {
@@ -213,7 +213,7 @@ public class CrawlerClient
     /// <param name="page">PuppeteerSharp page to retrieve content from</param>
     /// <param name="elementTag">Optional: HTML element with desired content. Default: 'main'</param>
     /// <returns>Content of webpage</returns>
-    private async Task<string> RetrieveContentOnPageAsync(IPage page, string? elementTag = "main")
+    private async Task<string> RetrieveContentAsync(IPage page, string? elementTag = "main")
     {
         try
         {
@@ -223,7 +223,7 @@ public class CrawlerClient
             var content = await page.EvaluateFunctionAsync<string>(function, element);
 
             if (string.IsNullOrEmpty(content) && elementTag != "body")
-                content = await RetrieveContentOnPageAsync(page, "body");
+                content = await RetrieveContentAsync(page, "body");
 
             if (string.IsNullOrEmpty(content))
                 _logger.LogError("No content on \"{url}\"!", page.Url);
