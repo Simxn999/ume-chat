@@ -249,12 +249,14 @@ public class CrawlerClient
         {
             var breadcrumbs = await RetrieveBreadcrumbsAsync(page);
 
-            if (breadcrumbs is null)
+            if (string.IsNullOrEmpty(breadcrumbs))
                 return null;
 
             var homepage = await RetrieveHomepageTitleAsync(page);
 
-            breadcrumbs = breadcrumbs.Replace("Startsida", homepage + ' ').Replace(" \n", " / ");
+            breadcrumbs = breadcrumbs.Replace("Startsida", homepage + ' ')
+                                     .Replace("Startpage", homepage + ' ')
+                                     .Replace(" \n", " / ");
 
             return breadcrumbs;
         }
@@ -323,7 +325,7 @@ public class CrawlerClient
             throw;
         }
     }
-    
+
     /// <summary>
     ///     Retrieve webpages that are empty or should be excluded based on ExcludedTitles.
     /// </summary>
