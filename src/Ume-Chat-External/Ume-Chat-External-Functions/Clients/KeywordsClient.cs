@@ -86,7 +86,7 @@ public class KeywordsClient
             _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with keywords...",
                                    documents.Count);
 
-            var foreignLanguages = GetForeginLanguages(documents);
+            var foreignLanguages = GetForeignLanguages(documents);
 
             var titleKeywordsTask = ExtractKeywordsAsync(documents, foreignLanguages, KeywordsType.Title);
             var pathKeywordsTask = ExtractKeywordsAsync(documents, foreignLanguages, KeywordsType.Path);
@@ -113,7 +113,7 @@ public class KeywordsClient
     /// </summary>
     /// <param name="documents">Documents to look for foreign languages</param>
     /// <returns>Dictionary where key is Document.ID and value is language code</returns>
-    public Dictionary<string, string> GetForeginLanguages(List<Document> documents)
+    public Dictionary<string, string> GetForeignLanguages(List<Document> documents)
     {
         try
         {
