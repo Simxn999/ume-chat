@@ -97,7 +97,7 @@ public class KeywordsClient
             foreach (var document in documents)
             {
                 document.KeywordsTitle = titleKeywordsTask.Result[document.URL ?? string.Empty];
-                document.KeywordsPath = pathKeywordsTask.Result[document.ID];
+                document.KeywordsPath = pathKeywordsTask.Result[document.URL ?? string.Empty];
                 document.KeywordsContent = contentKeywordsTask.Result[document.ID];
             }
         }
