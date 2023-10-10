@@ -210,7 +210,7 @@ public class IndexClient
             options.Size = size;
 
             // Filter & Groups
-            options.Filter = $"{GetGroupsFilter(groups)}{(filter is not null ? $"&{filter}" : string.Empty)}";
+            options.Filter = $"{GetGroupsFilter(groups)}{(filter is not null ? $"and {filter}" : string.Empty)}";
 
             return options;
         }
