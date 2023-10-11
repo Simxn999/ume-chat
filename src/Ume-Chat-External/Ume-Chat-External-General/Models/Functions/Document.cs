@@ -86,6 +86,13 @@ public class Document
     public DateTimeOffset? LastModified { get; set; }
 
     /// <summary>
+    ///     Priority weight of document.
+    /// </summary>
+    [JsonPropertyName("priority")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public decimal? Priority { get; set; }
+
+    /// <summary>
     ///     Identifier of chunk
     /// </summary>
     [JsonPropertyName("chunk_id")]

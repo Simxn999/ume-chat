@@ -155,7 +155,12 @@ public class CrawlerClient
             var content = await RetrieveContentAsync(pageCrawler);
             var path = await RetrievePathAsync(pageCrawler) ?? title;
 
-            var output = new CrawledWebpage(sitemapItem.URL, title, path, content, sitemapItem.LastModified);
+            var output = new CrawledWebpage(sitemapItem.URL,
+                                            title,
+                                            path,
+                                            content,
+                                            sitemapItem.LastModified,
+                                            sitemapItem.Priority);
 
             return output;
         }

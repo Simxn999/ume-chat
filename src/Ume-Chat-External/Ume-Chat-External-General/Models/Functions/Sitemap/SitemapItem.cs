@@ -14,4 +14,7 @@ public class SitemapItem
 
     [XmlElement("lastmod")]
     public DateTimeOffset LastModified { get; set; }
+
+    [XmlElement("priority")]
+    public decimal Priority { get; set; }
 }

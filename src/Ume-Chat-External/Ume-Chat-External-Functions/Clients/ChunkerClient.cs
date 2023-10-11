@@ -118,7 +118,8 @@ public class ChunkerClient
                                                             Path = crawledWebpage.Path,
                                                             Content = chunk,
                                                             ChunkID = i,
-                                                            LastModified = crawledWebpage.LastModified
+                                                            LastModified = crawledWebpage.LastModified,
+                                                            Priority = crawledWebpage.Priority
                                                         }));
 
             return output;
