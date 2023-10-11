@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using Azure.Data.AppConfiguration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,7 @@ public static class Variables
 {
     private static IConfiguration? _configuration;
     private static ILogger? _logger;
+    private static ConfigurationClient? _cloudConfigurationClient;
 
     /// <summary>
     ///     Add variable support to ConfigurationBuilder.
@@ -21,6 +23,8 @@ public static class Variables
     {
         _configuration = builder.Build();
         _logger = logger;
+        var cloudConnectionString = Get("DATASYNC_APP_CONFIGURATION_CONNECTION_STRING");
+        _cloudConfigurationClient = new ConfigurationClient(cloudConnectionString);
     }
 
     /// <summary>
@@ -123,6 +127,47 @@ public static class Variables
             }
 
             _logger.LogError(e, "Failed retrieval of enumerable!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve environment variable as DateTimeOffset from app configuration.
+    /// </summary>
+    /// <param name="key">Variable name</param>
+    /// <returns>DateTimeOffset from app configuration</returns>
+    /// <exception cref="Exception">Variable not found exception</exception>
+    public static DateTimeOffset GetDateTimeOffset(string key)
+    {
+        try
+        {
+            if (_configuration is null)
+                throw new Exception("Invalid configuration!");
+
+            var value = _configuration[key] ?? throw new Exception("Variable not found!");
+
+            return DateTimeOffset.Parse(value);
+        }
+        catch (Exception e)
+        {
+            Error(e);
+            throw;
+        }
+    }
+
+    public static void Set(string key, string value)
+    {
+        try
+        {
+            if (_configuration is null || _cloudConfigurationClient is null)
+                throw new Exception("Invalid configuration!");
+
+            _cloudConfigurationClient.SetConfigurationSetting(key, value);
+            _configuration[key] = value;
+        }
+        catch (Exception e)
+        {
+            Error(e);
             throw;
         }
     }

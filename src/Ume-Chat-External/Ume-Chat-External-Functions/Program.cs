@@ -18,6 +18,12 @@ var host = new HostBuilder().ConfigureFunctionsWorkerDefaults(builder => builder
                                                            // Configure Key Vault from appsettings 
                                                            builder.AddAzureKeyVaultWithReferenceSupport();
 
+                                                           var appConfigConnectionString =
+                                                               builder.Build()
+                                                                   ["DATASYNC_APP_CONFIGURATION_CONNECTION_STRING"];
+                                                           builder.AddAzureAppConfiguration(o =>
+                                                                                                o.Connect(appConfigConnectionString));
+
                                                            builder.AddVariables();
                                                        })
                             .Build();
