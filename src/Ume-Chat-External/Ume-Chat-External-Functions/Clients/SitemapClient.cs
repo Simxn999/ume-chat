@@ -5,25 +5,42 @@ using System.Xml.Serialization;
 using Microsoft.Extensions.Logging;
 using Ume_Chat_External_General;
 using Ume_Chat_External_General.Models.Functions.Sitemap;
+using Ume_Chat_External_General.Models.Functions.Sitemap.Root;
 
 namespace Ume_Chat_External_Functions.Clients;
 
 /// <summary>
 ///     Client for handling sitemap.
 /// </summary>
-/// <param name="logger">ILogger</param>
-[DebuggerDisplay("{URL}")]
-public class SitemapClient(ILogger logger)
+[DebuggerDisplay("{RootURL}")]
+public class SitemapClient
 {
+    private readonly ILogger _logger;
+
+    private SitemapClient(ILogger logger)
+    {
+        _logger = logger;
+    }
+
     /// <summary>
-    ///     URL to sitemap.
+    ///     Last synchronized time.
     /// </summary>
-    private string URL { get; } = Variables.Get("SITEMAP_URL");
+    public DateTimeOffset LastModified { get; set; }
+
+    /// <summary>
+    ///     URL to root sitemap.
+    /// </summary>
+    private string RootURL { get; set; } = string.Empty;
 
     /// <summary>
     ///     Namespace of sitemap.
     /// </summary>
-    private string SitemapNamespace { get; } = Variables.Get("SITEMAP_NAMESPACE");
+    private string SitemapNamespace { get; set; } = string.Empty;
+
+    /// <summary>
+    ///     URL to sitemap.
+    /// </summary>
+    private string URL { get; set; } = string.Empty;
 
     /// <summary>
     ///     Enumerable of segments in URLs that should be excluded from the database.
@@ -32,12 +49,33 @@ public class SitemapClient(ILogger logger)
         Variables.GetEnumerable("SITEMAP_EXCLUDED_URL_SEGMENTS").ToList();
 
     /// <summary>
+    ///     Create SitemapClient and initialize properties asynchronously.
+    /// </summary>
+    /// <param name="logger">ILogger</param>
+    /// <returns>SitemapClient</returns>
+    public static async Task<SitemapClient> CreateAsync(ILogger logger)
+    {
+        try
+        {
+            var sitemapClient = new SitemapClient(logger);
+            await sitemapClient.InitializeAsync();
+
+            return sitemapClient;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed creating SitemapClient!");
+            throw;
+        }
+    }
+
+    /// <summary>
     ///     Retrieve sitemap for website.
     /// </summary>
     /// <returns>Sitemap for website</returns>
     public async Task<Sitemap> GetSitemapAsync()
     {
-        logger.LogInformation("Retrieving sitemap...");
+        _logger.LogInformation("Retrieving sitemap...");
 
         try
         {
@@ -64,7 +102,7 @@ public class SitemapClient(ILogger logger)
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed retrieval of sitemap!");
+            _logger.LogError(e, "Failed retrieval of sitemap!");
             throw;
         }
     }
@@ -82,7 +120,58 @@ public class SitemapClient(ILogger logger)
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Failed retrieval of pages!");
+            _logger.LogError(e, "Failed retrieval of pages!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Initialize properties asynchronously.
+    /// </summary>
+    private async Task InitializeAsync()
+    {
+        try
+        {
+            RootURL = Variables.Get("SITEMAP_URL");
+            SitemapNamespace = Variables.Get("SITEMAP_NAMESPACE");
+            var rootSitemap = await GetRootSitemapAsync();
+
+            URL = rootSitemap.URL;
+            LastModified = rootSitemap.LastModified;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed initialization of SitemapClient!");
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve root sitemap for website.
+    /// </summary>
+    /// <returns>RootSitemap for website</returns>
+    private async Task<RootSitemap> GetRootSitemapAsync()
+    {
+        try
+        {
+            using var httpClient = new HttpClient();
+            var xmlString = await httpClient.GetStringAsync(RootURL);
+
+            var xml = new XmlDocument();
+            xml.LoadXml(xmlString);
+            ArgumentNullException.ThrowIfNull(xml.DocumentElement, nameof(xml.DocumentElement));
+
+            // Retrieve sitemap from xml
+            var serializer = new XmlSerializer(typeof(RootSitemapIndex),
+                                               new XmlRootAttribute("sitemapindex") { Namespace = SitemapNamespace });
+            var rootSitemap = serializer.Deserialize(new XmlNodeReader(xml.DocumentElement)) as RootSitemapIndex;
+            ArgumentNullException.ThrowIfNull(rootSitemap, nameof(rootSitemap));
+
+            return rootSitemap.Sitemap;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed retrieval of root sitemap!");
             throw;
         }
     }

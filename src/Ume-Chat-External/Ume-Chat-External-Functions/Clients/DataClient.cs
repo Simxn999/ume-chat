@@ -22,6 +22,16 @@ public class DataClient
     }
 
     /// <summary>
+    ///     Whether or not the database is already synchronized.
+    /// </summary>
+    private bool IsSynchronized { get; set; }
+
+    /// <summary>
+    ///     Client for handling sitemap.
+    /// </summary>
+    private SitemapClient SitemapClient { get; set; } = default!;
+
+    /// <summary>
     ///     Client for handling database/index.
     /// </summary>
     private IndexClient IndexClient { get; set; } = default!;
@@ -97,6 +107,12 @@ public class DataClient
     /// </summary>
     public async Task SynchronizeAsync()
     {
+        if (IsSynchronized)
+        {
+            _logger.LogInformation("Database is already synchronized with website!");
+            return;
+        }
+
         _logger.LogInformation("Synchronizing database with sitemap...");
         var stopwatch = new Stopwatch();
         stopwatch.Start();
@@ -117,6 +133,8 @@ public class DataClient
 
             stopwatch.Stop();
             _logger.LogInformation($"Synchronization successfull! {Math.Round(stopwatch.Elapsed.TotalSeconds, 2).ToString(CultureInfo.InvariantCulture)}s");
+
+            Variables.Set("LAST_SYNCHRONIZED", SitemapClient.LastModified.ToString());
         }
         catch (Exception e)
         {
@@ -134,7 +152,12 @@ public class DataClient
     {
         try
         {
-            var sitemapper = new SitemapClient(_logger);
+            SitemapClient = await SitemapClient.CreateAsync(_logger);
+
+            IsSynchronized = Variables.GetDateTimeOffset("LAST_SYNCHRONIZED") == SitemapClient.LastModified;
+            if (IsSynchronized)
+                return;
+
             IndexClient = new IndexClient(_logger);
             CrawlerClient = await CrawlerClient.CreateAsync(_logger);
             ChunkerClient = new ChunkerClient(_logger);
@@ -142,8 +165,8 @@ public class DataClient
             KeywordsClient = new KeywordsClient(_logger);
             DefaultGroups = Variables.GetEnumerable("DOCUMENT_DEFAULT_GROUPS");
             Index = await IndexClient.GetDocumentsForComparisonAsync();
-            Sitemap = await sitemapper.GetSitemapAsync();
-            SitemapItems = sitemapper.GetPages(Sitemap);
+            Sitemap = await SitemapClient.GetSitemapAsync();
+            SitemapItems = SitemapClient.GetPages(Sitemap);
             BatchSize = Variables.GetInt("DATA_SYNCHRONIZATION_BATCH_SIZE");
         }
         catch (Exception e)
