@@ -119,14 +119,7 @@ public static class Variables
         }
         catch (Exception e)
         {
-            if (_logger is null)
-            {
-                Console.WriteLine("Failed retrieval of enumerable!");
-                Console.WriteLine(e);
-                throw;
-            }
-
-            _logger.LogError(e, "Failed retrieval of enumerable!");
+            Error(e);
             throw;
         }
     }
@@ -155,6 +148,12 @@ public static class Variables
         }
     }
 
+    /// <summary>
+    ///     Updates a variable in Azure App Configuration.
+    /// </summary>
+    /// <param name="key">Variable name</param>
+    /// <param name="value">Variable value</param>
+    /// <exception cref="Exception">Invalid configuration exception</exception>
     public static void Set(string key, string value)
     {
         try
@@ -172,6 +171,10 @@ public static class Variables
         }
     }
 
+    /// <summary>
+    ///     Handles variable errors.
+    /// </summary>
+    /// <param name="e">Exception</param>
     private static void Error(Exception e)
     {
         if (_logger is null)
