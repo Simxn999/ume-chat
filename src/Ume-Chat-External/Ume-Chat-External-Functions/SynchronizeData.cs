@@ -15,7 +15,7 @@ public class SynchronizeData(ILoggerFactory loggerFactory)
     [Function("SynchronizeData")]
     public async Task Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "synchronize-data")] HttpRequestData req)
-        // public async Task Run([TimerTrigger("0 0 15 * * 1-5")] TimerInfo timer) // TODO: Should automatically run 17:00 Swedish time every weekday
+        // public async Task Run([TimerTrigger("0 0 7 * * *")] TimerInfo timer) // TODO: Should automatically run 07:00 Swedish time daily
     {
         try
         {
