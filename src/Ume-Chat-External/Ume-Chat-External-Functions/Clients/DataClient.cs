@@ -134,7 +134,7 @@ public class DataClient
             stopwatch.Stop();
             _logger.LogInformation($"Synchronization successfull! {Math.Round(stopwatch.Elapsed.TotalSeconds, 2).ToString(CultureInfo.InvariantCulture)}s");
 
-            Variables.Set("LAST_SYNCHRONIZED", SitemapClient.LastModified.ToString());
+            Variables.Set("LAST_SYNCHRONIZED", SitemapClient.LastModified.ToString("yyyy-MM-ddTHH:mm:sszzz"));
         }
         catch (Exception e)
         {
