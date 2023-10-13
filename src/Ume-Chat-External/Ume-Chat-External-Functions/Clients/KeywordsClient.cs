@@ -76,7 +76,7 @@ public class KeywordsClient
     private TextAnalyticsClient Client { get; }
 
     /// <summary>
-    ///     Populate documents with extracted keywords based on Title, Path & Content.
+    ///     Populate documents with extracted keywords based on Title & Content.
     /// </summary>
     /// <param name="documents">Reference to list of documents to populate & extract keywords</param>
     public void PopulateDocumentsWithKeywords(ref List<Document> documents)
@@ -89,15 +89,13 @@ public class KeywordsClient
             var foreignLanguages = GetForeignLanguages(documents);
 
             var titleKeywordsTask = ExtractKeywordsAsync(documents, foreignLanguages, KeywordsType.Title);
-            var pathKeywordsTask = ExtractKeywordsAsync(documents, foreignLanguages, KeywordsType.Path);
             var contentKeywordsTask = ExtractKeywordsAsync(documents, foreignLanguages, KeywordsType.Content);
 
-            Task.WaitAll(titleKeywordsTask, pathKeywordsTask, contentKeywordsTask);
+            Task.WaitAll(titleKeywordsTask, contentKeywordsTask);
 
             foreach (var document in documents)
             {
                 document.KeywordsTitle = titleKeywordsTask.Result[document.URL ?? string.Empty];
-                document.KeywordsPath = pathKeywordsTask.Result[document.URL ?? string.Empty];
                 document.KeywordsContent = contentKeywordsTask.Result[document.ID];
             }
         }
@@ -236,7 +234,7 @@ public class KeywordsClient
     /// </summary>
     /// <param name="documents">Documents to convert</param>
     /// <param name="foreignLanguages">Dictionary of IDs with foreign language</param>
-    /// <param name="type">Type of keywords extraction. Title, Path or Content</param>
+    /// <param name="type">Type of keywords extraction. Title or Content</param>
     /// <returns>List of TextDocumentInput</returns>
     private List<TextDocumentInput> ConvertDocumentsToTextDocumentInputs(
         List<Document> documents,
@@ -254,7 +252,7 @@ public class KeywordsClient
 
                                         return input;
                                     })
-                             // Distinct because Titles & Paths are batched by URL since documents with the same URL has the same Title & Path
+                             // Distinct because Titles are batched by URL since documents with the same URL has the same Title
                             .DistinctBy(x => x.Id)
                             .ToList();
         }
@@ -269,10 +267,9 @@ public class KeywordsClient
     ///     Converts a document to TextDocumentInput.
     /// </summary>
     /// <param name="document">Document to convert</param>
-    /// <param name="type">Type of keywords extraction. Title, Path or Content</param>
+    /// <param name="type">Type of keywords extraction. Title or Content</param>
     /// <returns>
     ///     <para>Title = TextDocumentInput where Id = Document.URL</para>
-    ///     <para>Path = TextDocumentInput where Id = Document.URL</para>
     ///     <para>Content = TextDocumentInput where Id = Document.ID</para>
     /// </returns>
     /// <exception cref="Exception">KeywordsType was incorrect!</exception>
@@ -282,9 +279,8 @@ public class KeywordsClient
         {
             var textDocumentInput = type switch
                                     {
-                                        // URL because documents with the same URL has the same Title & Path
+                                        // URL because documents with the same URL has the same Title
                                         KeywordsType.Title => new TextDocumentInput(document.URL, document.Title),
-                                        KeywordsType.Path => new TextDocumentInput(document.URL, document.Path),
                                         KeywordsType.Content => new TextDocumentInput(document.ID, document.Content),
                                         _ => throw new Exception("KeywordsType was incorrect!")
                                     };

@@ -6,6 +6,5 @@
 public enum KeywordsType
 {
     Title,
-    Path,
     Content
 }
