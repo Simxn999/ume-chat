@@ -24,7 +24,7 @@ var host = new HostBuilder().ConfigureFunctionsWorkerDefaults(builder => builder
                                                            builder.AddAzureAppConfiguration(o =>
                                                                                                 o.Connect(appConfigConnectionString));
 
-                                                           builder.AddVariables();
+                                                           builder.AddVariables(cloud: true);
                                                        })
                             .Build();
 

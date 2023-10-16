@@ -19,10 +19,15 @@ public static class Variables
     /// </summary>
     /// <param name="builder">App configuration builder</param>
     /// <param name="logger">ILogger</param>
-    public static void AddVariables(this IConfigurationBuilder builder, ILogger? logger = null)
+    /// <param name="cloud">If Azure App Configuration is used</param>
+    public static void AddVariables(this IConfigurationBuilder builder, ILogger? logger = null, bool cloud = false)
     {
         _configuration = builder.Build();
         _logger = logger;
+
+        if (!cloud)
+            return;
+        
         var cloudConnectionString = Get("DATASYNC_APP_CONFIGURATION_CONNECTION_STRING");
         _cloudConfigurationClient = new ConfigurationClient(cloudConnectionString);
     }
