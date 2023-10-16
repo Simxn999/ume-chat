@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Data", "Ume-Chat-Data\Ume-Chat-Data.csproj", "{66026822-F996-4B6D-8840-78661ABB6594}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ume-Chat-Models", "Ume-Chat-Models", "{898D9181-9E6B-49B1-8DC5-2C2373F5A72A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Models", "..\Ume-Chat-Models\Ume-Chat-Models.csproj", "{87EC6A4D-FEB4-41F9-A78E-C004FEC2C37F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ume-Chat-Utilities", "Ume-Chat-Utilities", "{494E7095-C67C-4EC1-9F3A-0DDB13A62DC7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Utilities", "..\Ume-Chat-Utilities\Ume-Chat-Utilities\Ume-Chat-Utilities.csproj", "{34E18FB3-334B-4CEE-BE4F-C55789D115AE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-KeyVaultProvider", "..\Ume-Chat-Utilities\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj", "{4A584A8C-D7EB-4AB4-9FD3-2A8DEB2043C5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6653CB70-9118-413A-8983-D13B61EDD34E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6653CB70-9118-413A-8983-D13B61EDD34E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6653CB70-9118-413A-8983-D13B61EDD34E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6653CB70-9118-413A-8983-D13B61EDD34E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C159450-F18C-400D-8FCD-F24CC245900A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C159450-F18C-400D-8FCD-F24CC245900A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C159450-F18C-400D-8FCD-F24CC245900A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C159450-F18C-400D-8FCD-F24CC245900A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F2233F3-1735-45F9-8EB6-284966A4D54A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F2233F3-1735-45F9-8EB6-284966A4D54A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F2233F3-1735-45F9-8EB6-284966A4D54A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F2233F3-1735-45F9-8EB6-284966A4D54A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E06D9DDA-DB0F-4496-97DE-3B0C77B350B7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E06D9DDA-DB0F-4496-97DE-3B0C77B350B7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E06D9DDA-DB0F-4496-97DE-3B0C77B350B7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E06D9DDA-DB0F-4496-97DE-3B0C77B350B7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66026822-F996-4B6D-8840-78661ABB6594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66026822-F996-4B6D-8840-78661ABB6594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66026822-F996-4B6D-8840-78661ABB6594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66026822-F996-4B6D-8840-78661ABB6594}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87EC6A4D-FEB4-41F9-A78E-C004FEC2C37F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87EC6A4D-FEB4-41F9-A78E-C004FEC2C37F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87EC6A4D-FEB4-41F9-A78E-C004FEC2C37F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87EC6A4D-FEB4-41F9-A78E-C004FEC2C37F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34E18FB3-334B-4CEE-BE4F-C55789D115AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34E18FB3-334B-4CEE-BE4F-C55789D115AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34E18FB3-334B-4CEE-BE4F-C55789D115AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34E18FB3-334B-4CEE-BE4F-C55789D115AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A584A8C-D7EB-4AB4-9FD3-2A8DEB2043C5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A584A8C-D7EB-4AB4-9FD3-2A8DEB2043C5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A584A8C-D7EB-4AB4-9FD3-2A8DEB2043C5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A584A8C-D7EB-4AB4-9FD3-2A8DEB2043C5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{87EC6A4D-FEB4-41F9-A78E-C004FEC2C37F} = {898D9181-9E6B-49B1-8DC5-2C2373F5A72A}
+		{34E18FB3-334B-4CEE-BE4F-C55789D115AE} = {494E7095-C67C-4EC1-9F3A-0DDB13A62DC7}
+		{4A584A8C-D7EB-4AB4-9FD3-2A8DEB2043C5} = {494E7095-C67C-4EC1-9F3A-0DDB13A62DC7}
+	EndGlobalSection
+EndGlobal

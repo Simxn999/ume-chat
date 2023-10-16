@@ -1,0 +1,43 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-API", "Ume-Chat-API\Ume-Chat-API.csproj", "{8D34C9DB-9758-41D7-A6F9-2FAEB537530F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ume-Chat-Utilities", "Ume-Chat-Utilities", "{87B02A51-4BF8-424C-A1E3-3F21104A6443}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Utilities", "..\Ume-Chat-Utilities\Ume-Chat-Utilities\Ume-Chat-Utilities.csproj", "{735B1B7A-1837-443A-8872-2039ABD3845E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-KeyVaultProvider", "..\Ume-Chat-Utilities\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj", "{3BB809FB-B086-4FEB-A471-32D35EF01DBA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ume-Chat-Models", "Ume-Chat-Models", "{46C1FFEE-CB8E-43D0-8421-68B3C82F17FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Models", "..\Ume-Chat-Models\Ume-Chat-Models.csproj", "{A825D6D5-20E4-4DD1-83A1-943DC54280E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8D34C9DB-9758-41D7-A6F9-2FAEB537530F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D34C9DB-9758-41D7-A6F9-2FAEB537530F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D34C9DB-9758-41D7-A6F9-2FAEB537530F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D34C9DB-9758-41D7-A6F9-2FAEB537530F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{735B1B7A-1837-443A-8872-2039ABD3845E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{735B1B7A-1837-443A-8872-2039ABD3845E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{735B1B7A-1837-443A-8872-2039ABD3845E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{735B1B7A-1837-443A-8872-2039ABD3845E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BB809FB-B086-4FEB-A471-32D35EF01DBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BB809FB-B086-4FEB-A471-32D35EF01DBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BB809FB-B086-4FEB-A471-32D35EF01DBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BB809FB-B086-4FEB-A471-32D35EF01DBA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A825D6D5-20E4-4DD1-83A1-943DC54280E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A825D6D5-20E4-4DD1-83A1-943DC54280E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A825D6D5-20E4-4DD1-83A1-943DC54280E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A825D6D5-20E4-4DD1-83A1-943DC54280E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{735B1B7A-1837-443A-8872-2039ABD3845E} = {87B02A51-4BF8-424C-A1E3-3F21104A6443}
+		{3BB809FB-B086-4FEB-A471-32D35EF01DBA} = {87B02A51-4BF8-424C-A1E3-3F21104A6443}
+		{A825D6D5-20E4-4DD1-83A1-943DC54280E1} = {46C1FFEE-CB8E-43D0-8421-68B3C82F17FA}
+	EndGlobalSection
+EndGlobal

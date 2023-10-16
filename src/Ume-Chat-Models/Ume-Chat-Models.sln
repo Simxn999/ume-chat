@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Models", "Ume-Chat-Models.csproj", "{BCA94ED9-ECCC-4B9D-8725-972827078157}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BCA94ED9-ECCC-4B9D-8725-972827078157}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCA94ED9-ECCC-4B9D-8725-972827078157}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCA94ED9-ECCC-4B9D-8725-972827078157}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCA94ED9-ECCC-4B9D-8725-972827078157}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
