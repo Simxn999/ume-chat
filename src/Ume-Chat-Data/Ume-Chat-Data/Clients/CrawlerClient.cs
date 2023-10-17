@@ -60,8 +60,7 @@ public class CrawlerClient
     /// <returns>List of crawled webpages</returns>
     public IList<CrawledWebpage> CrawlSitemapItems(IList<SitemapItem> sitemapItems)
     {
-        _logger.LogInformation($"Crawling {{Count}} sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}...",
-                               sitemapItems.Count);
+        _logger.LogInformation($"Crawling {{Count}} sitemap item{Grammar.GetPlurality(sitemapItems.Count, "", "s")}...", sitemapItems.Count);
 
         try
         {
@@ -123,10 +122,10 @@ public class CrawlerClient
         {
             await new BrowserFetcher().DownloadAsync();
             Browser = await Puppeteer.LaunchAsync(new LaunchOptions
-                                                  {
-                                                      Timeout = 0,
-                                                      Args = new[] { "--no-sandbox" }
-                                                  });
+            {
+                Timeout = 0,
+                Args = new[] { "--no-sandbox" }
+            });
 
             return Browser;
         }
@@ -153,11 +152,7 @@ public class CrawlerClient
             var title = await RetrieveTitleAsync(pageCrawler);
             var content = await RetrieveContentAsync(pageCrawler);
 
-            var output = new CrawledWebpage(sitemapItem.URL,
-                                            title,
-                                            content,
-                                            sitemapItem.LastModified,
-                                            sitemapItem.Priority);
+            var output = new CrawledWebpage(sitemapItem.URL, title, content, sitemapItem.LastModified, sitemapItem.Priority);
 
             return output;
         }
@@ -247,10 +242,9 @@ public class CrawlerClient
     /// <returns>List of valid webpages</returns>
     private List<CrawledWebpage> GetInvalidWebpages(IEnumerable<CrawledWebpage> webpages)
     {
-        var invalidWebpages = webpages.Where(w => string.IsNullOrEmpty(w.Title) ||
-                                                  string.IsNullOrEmpty(w.Content) ||
-                                                  ExcludedTitles.Any(t => t.Equals(w.Title)))
-                                      .ToList();
+        var invalidWebpages = webpages
+                             .Where(w => string.IsNullOrEmpty(w.Title) || string.IsNullOrEmpty(w.Content) || ExcludedTitles.Any(t => t.Equals(w.Title)))
+                             .ToList();
 
         if (invalidWebpages.Count > 0)
             _logger.LogInformation($"{{Count}} sitemap item{Grammar.GetPlurality(invalidWebpages.Count, "", "s")} {Grammar.GetPlurality(invalidWebpages.Count, "was", "were")} determined invalid!",

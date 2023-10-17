@@ -74,8 +74,7 @@ public class IndexClient
     /// </summary>
     /// <param name="documents">Documents to action</param>
     /// <param name="action">Action for database</param>
-    public async Task IndexDocumentsAsync(IEnumerable<Document> documents,
-                                          Func<Document, IndexDocumentsAction<Document>> action)
+    public async Task IndexDocumentsAsync(IEnumerable<Document> documents, Func<Document, IndexDocumentsAction<Document>> action)
     {
         try
         {
@@ -185,10 +184,7 @@ public class IndexClient
     /// <param name="size">Optional: Amount of documents to retrieve</param>
     /// <param name="groups">Optional: Group of documents to retrieve</param>
     /// <returns>Configured SearchOptions</returns>
-    private SearchOptions GetSearchOptions(string? filter = null,
-                                           IEnumerable<string>? select = null,
-                                           int? size = null,
-                                           IEnumerable<string>? groups = null)
+    private SearchOptions GetSearchOptions(string? filter = null, IEnumerable<string>? select = null, int? size = null, IEnumerable<string>? groups = null)
     {
         try
         {

@@ -38,7 +38,7 @@ public static class Variables
     {
         _logger = logger;
     }
-    
+
     /// <summary>
     ///     Retrieve environment variable from app configuration.
     /// </summary>
@@ -122,10 +122,7 @@ public static class Variables
         {
             ArgumentNullException.ThrowIfNull(_configuration);
 
-            var output = _configuration.GetSection(key)
-                                       .GetChildren()
-                                       .Select(c => c.Value ?? string.Empty)
-                                       .Where(c => !string.IsNullOrEmpty(c));
+            var output = _configuration.GetSection(key).GetChildren().Select(c => c.Value ?? string.Empty).Where(c => !string.IsNullOrEmpty(c));
 
             return output ?? throw new Exception("Enumerable not found!");
         }

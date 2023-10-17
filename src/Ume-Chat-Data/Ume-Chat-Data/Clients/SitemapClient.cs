@@ -44,8 +44,7 @@ public class SitemapClient
     /// <summary>
     ///     Enumerable of segments in URLs that should be excluded from the database.
     /// </summary>
-    private IEnumerable<string> SitemapExcludedURLSegments { get; } =
-        Variables.GetEnumerable("SITEMAP_EXCLUDED_URL_SEGMENTS").ToList();
+    private IEnumerable<string> SitemapExcludedURLSegments { get; } = Variables.GetEnumerable("SITEMAP_EXCLUDED_URL_SEGMENTS").ToList();
 
     /// <summary>
     ///     Create SitemapClient and initialize properties asynchronously.
@@ -92,8 +91,7 @@ public class SitemapClient
             ArgumentNullException.ThrowIfNull(xml.DocumentElement, nameof(xml.DocumentElement));
 
             // Retrieve sitemap from xml
-            var serializer = new XmlSerializer(typeof(Sitemap),
-                                               new XmlRootAttribute("urlset") { Namespace = SitemapNamespace });
+            var serializer = new XmlSerializer(typeof(Sitemap), new XmlRootAttribute("urlset") { Namespace = SitemapNamespace });
             var sitemap = serializer.Deserialize(new XmlNodeReader(xml.DocumentElement)) as Sitemap;
             ArgumentNullException.ThrowIfNull(sitemap, nameof(sitemap));
 
@@ -161,8 +159,7 @@ public class SitemapClient
             ArgumentNullException.ThrowIfNull(xml.DocumentElement, nameof(xml.DocumentElement));
 
             // Retrieve sitemap from xml
-            var serializer = new XmlSerializer(typeof(RootSitemapIndex),
-                                               new XmlRootAttribute("sitemapindex") { Namespace = SitemapNamespace });
+            var serializer = new XmlSerializer(typeof(RootSitemapIndex), new XmlRootAttribute("sitemapindex") { Namespace = SitemapNamespace });
             var rootSitemap = serializer.Deserialize(new XmlNodeReader(xml.DocumentElement)) as RootSitemapIndex;
             ArgumentNullException.ThrowIfNull(rootSitemap, nameof(rootSitemap));
 

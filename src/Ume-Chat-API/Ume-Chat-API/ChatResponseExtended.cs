@@ -60,8 +60,7 @@ public partial class ChatResponseExtended : ChatResponse
 
         var responseCitations = JsonSerializer.Deserialize<ResponseCitations>(citationsString);
 
-        return responseCitations?.Citations.Select((citation, i) => new Citation(i + 1, citation.Title, citation.URL))
-                                 .ToList();
+        return responseCitations?.Citations.Select((citation, i) => new Citation(i + 1, citation.Title, citation.URL)).ToList();
     }
 
     /// <summary>

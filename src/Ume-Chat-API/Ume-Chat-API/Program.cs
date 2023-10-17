@@ -26,7 +26,9 @@ app.UseHttpsRedirection();
 
 app.MapPost("api/chat",
             async (HttpContext context, List<RequestMessage> messages, bool? stream = false) =>
-                await DataManager.ChatAsync(context, messages, stream ?? false))
+            {
+                return await DataManager.ChatAsync(context, messages, stream ?? false);
+            })
    .AddEndpointFilter<ValidationFilter<List<RequestMessage>>>();
 
 app.Run();

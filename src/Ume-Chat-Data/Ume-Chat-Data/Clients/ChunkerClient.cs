@@ -23,15 +23,15 @@ public class ChunkerClient
             ChunkOverlap = (int)(ChunkSize * Variables.GetFloat("CHUNK_OVERLAP_MULTIPLIER"));
             ExcludedContent = Variables.GetEnumerable("CHUNKER_EXCLUDED_CONTENT");
             ChunkSplitters = new Dictionary<string, string>
-                             {
-                                 { "#", "\n\n" },
-                                 { "\n\n", "\n" },
-                                 { "\n", "." },
-                                 { ".", "?" },
-                                 { "?", "!" },
-                                 { "!", " " },
-                                 { " ", string.Empty }
-                             };
+            {
+                { "#", "\n\n" },
+                { "\n\n", "\n" },
+                { "\n", "." },
+                { ".", "?" },
+                { "?", "!" },
+                { "!", " " },
+                { " ", string.Empty }
+            };
             SentenceSplitters = new[] { '\n', '.', '!', '?' };
         }
         catch (Exception e)
@@ -73,8 +73,7 @@ public class ChunkerClient
     /// <returns>List of documents each containing a chunk</returns>
     public List<Document> ChunkCrawledWebpages(IList<CrawledWebpage> crawledWebpages)
     {
-        _logger.LogInformation($"Chunking {{Count}} webpage{Grammar.GetPlurality(crawledWebpages.Count, "", "s")}...",
-                               crawledWebpages.Count);
+        _logger.LogInformation($"Chunking {{Count}} webpage{Grammar.GetPlurality(crawledWebpages.Count, "", "s")}...", crawledWebpages.Count);
 
         try
         {
@@ -112,14 +111,14 @@ public class ChunkerClient
 
             // Convert chunks to documents
             output.AddRange(chunks.Select((chunk, i) => new Document
-                                                        {
-                                                            URL = crawledWebpage.URL,
-                                                            Title = crawledWebpage.Title,
-                                                            Content = chunk,
-                                                            ChunkID = i,
-                                                            LastModified = crawledWebpage.LastModified,
-                                                            Priority = crawledWebpage.Priority
-                                                        }));
+            {
+                URL = crawledWebpage.URL,
+                Title = crawledWebpage.Title,
+                Content = chunk,
+                ChunkID = i,
+                LastModified = crawledWebpage.LastModified,
+                Priority = crawledWebpage.Priority
+            }));
 
             return output;
         }

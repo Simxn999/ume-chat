@@ -12,9 +12,7 @@ internal class KeyVaultConfigurationProvider : ConfigurationProvider
     private readonly IConfiguration _config;
     private readonly IKeyVaultGateway _keyVaultGateway;
 
-    public KeyVaultConfigurationProvider(IConfiguration config,
-                                         string? azureKeyVaultUrl,
-                                         IKeyVaultGateway? keyVaultGateway)
+    public KeyVaultConfigurationProvider(IConfiguration config, string? azureKeyVaultUrl, IKeyVaultGateway? keyVaultGateway)
     {
         var url = config[_azureKeyVaultURLSettingName] ?? "";
 
@@ -63,8 +61,7 @@ internal class KeyVaultConfigurationProvider : ConfigurationProvider
         return references;
     }
 
-    private static void FilterKeyVaultReferencesRecursive(IConfiguration configSection,
-                                                          ref Dictionary<string, AzureKeyVaultReference> references)
+    private static void FilterKeyVaultReferencesRecursive(IConfiguration configSection, ref Dictionary<string, AzureKeyVaultReference> references)
     {
         foreach (var childSection in configSection.GetChildren())
         {

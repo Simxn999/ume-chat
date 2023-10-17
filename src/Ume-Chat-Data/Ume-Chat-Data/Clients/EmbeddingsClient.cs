@@ -68,8 +68,7 @@ public class EmbeddingsClient
     /// <param name="documents">Reference to list of documents to populate with embeddings</param>
     public void PopulateDocumentsWithEmbeddings(ref List<Document> documents)
     {
-        _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with embeddings...",
-                               documents.Count);
+        _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with embeddings...", documents.Count);
 
         try
         {

@@ -14,8 +14,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Ume-Chat-Models\Ume-Chat-Models.csproj" />
-        <ProjectReference Include="..\..\Ume-Chat-Utilities\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj" />
-        <ProjectReference Include="..\..\Ume-Chat-Utilities\Ume-Chat-Utilities\Ume-Chat-Utilities.csproj" />
+        <ProjectReference Include="..\..\Ume-Chat-Models\Ume-Chat-Models.csproj"/>
+        <ProjectReference Include="..\..\Ume-Chat-Utilities\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj"/>
+        <ProjectReference Include="..\..\Ume-Chat-Utilities\Ume-Chat-Utilities\Ume-Chat-Utilities.csproj"/>
     </ItemGroup>
 </Project>

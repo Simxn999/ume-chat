@@ -15,26 +15,26 @@ try
     Console.WriteLine("Initializing...");
 
     var host = new HostBuilder().ConfigureAppConfiguration((_, builder) =>
-                                {
-                                    builder.AddEnvironmentVariables();
-                                    builder.SetBasePath(Environment.CurrentDirectory);
-                                    builder.AddJsonFile("appsettings.json");
+                                 {
+                                     builder.AddEnvironmentVariables();
+                                     builder.SetBasePath(Environment.CurrentDirectory);
+                                     builder.AddJsonFile("appsettings.json");
 
-                                    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                                     var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-                                    if (env == "Development")
-                                        builder.AddJsonFile("appsettings.Development.json", true);
+                                     if (env == "Development")
+                                         builder.AddJsonFile("appsettings.Development.json", true);
 
-                                    builder.AddAzureKeyVaultWithReferenceSupport();
+                                     builder.AddAzureKeyVaultWithReferenceSupport();
 
-                                    var appConfigConnectionString = builder.Build()["DATASYNC_APP_CONFIGURATION_CONNECTION_STRING"];
+                                     var appConfigConnectionString = builder.Build()["DATASYNC_APP_CONFIGURATION_CONNECTION_STRING"];
 
-                                    ArgumentNullException.ThrowIfNull(appConfigConnectionString);
+                                     ArgumentNullException.ThrowIfNull(appConfigConnectionString);
 
-                                    builder.AddAzureAppConfiguration(o => o.Connect(appConfigConnectionString));
+                                     builder.AddAzureAppConfiguration(o => o.Connect(appConfigConnectionString));
 
-                                    builder.AddVariables(true);
-                                })
+                                     builder.AddVariables(true);
+                                 })
                                 .ConfigureLogging((_, logging) => { logging.AddProvider(new UmeLoggerProvider()); })
                                 .Build();
 

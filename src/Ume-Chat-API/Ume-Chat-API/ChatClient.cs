@@ -68,8 +68,7 @@ public static class ChatClient
     /// <summary>
     ///     Key to Azure Cognitive Search.
     /// </summary>
-    private static AzureKeyCredential SearchKey { get; } =
-        new AzureKeyCredential(Variables.Get("COGNITIVESEARCH_API_KEY"));
+    private static AzureKeyCredential SearchKey { get; } = new AzureKeyCredential(Variables.Get("COGNITIVESEARCH_API_KEY"));
 
     /// <summary>
     ///     Key to Azure Cognitive Search.
@@ -134,11 +133,9 @@ public static class ChatClient
     /// </summary>
     /// <param name="chatMessages">Messages</param>
     /// <returns>Answer message and citations chunked in an asynchronous enumerable</returns>
-    public static async Task<IAsyncEnumerable<ChatMessage>> SendChatRequestStreamingAsync(
-        IEnumerable<ChatMessage> chatMessages)
+    public static async Task<IAsyncEnumerable<ChatMessage>> SendChatRequestStreamingAsync(IEnumerable<ChatMessage> chatMessages)
     {
-        var response =
-            await Client.GetChatCompletionsStreamingAsync(GPTDeployment, GetChatCompletionOptions(chatMessages));
+        var response = await Client.GetChatCompletionsStreamingAsync(GPTDeployment, GetChatCompletionOptions(chatMessages));
 
         var asyncEnumerator = response.Value.GetChoicesStreaming().GetAsyncEnumerator();
 
@@ -157,10 +154,10 @@ public static class ChatClient
         // var date = DateTime.Now;
         // var cultureInfo = new CultureInfo("sv-SE");
         var messages = new List<ChatMessage>
-                       {
-                           new ChatMessage(ChatRole.System, RoleInformation)
-                           // new ChatMessage(ChatRole.User, $"Dagens datum är {date.ToString("D", cultureInfo)} och klockan är just nu {date:t}.") // TODO: Should be in system message!
-                       };
+        {
+            new ChatMessage(ChatRole.System, RoleInformation)
+            // new ChatMessage(ChatRole.User, $"Dagens datum är {date.ToString("D", cultureInfo)} och klockan är just nu {date:t}.") // TODO: Should be in system message!
+        };
 
         messages.AddRange(requestMessages.Select(m => new ChatMessage(GetChatRole(m.Role), m.Message)));
 
@@ -176,14 +173,14 @@ public static class ChatClient
     private static ChatRole GetChatRole(string role)
     {
         return role.ToLower() switch
-               {
-                   "user" => ChatRole.User,
-                   "assistant" => ChatRole.Assistant,
-                   "system" => ChatRole.System,
-                   "tool" => ChatRole.Tool,
-                   "function" => ChatRole.Function,
-                   _ => throw new Exception("Invalid role!")
-               };
+        {
+            "user" => ChatRole.User,
+            "assistant" => ChatRole.Assistant,
+            "system" => ChatRole.System,
+            "tool" => ChatRole.Tool,
+            "function" => ChatRole.Function,
+            _ => throw new Exception("Invalid role!")
+        };
     }
 
     /// <summary>
@@ -194,11 +191,11 @@ public static class ChatClient
     private static ChatCompletionsOptions GetChatCompletionOptions(IEnumerable<ChatMessage> chatMessages)
     {
         return new ChatCompletionsOptions(chatMessages)
-               {
-                   // MaxTokens = MaxTokens,
-                   Temperature = Temperature,
-                   AzureExtensionsOptions = AzureExtensionsOptions
-               };
+        {
+            // MaxTokens = MaxTokens,
+            Temperature = Temperature,
+            AzureExtensionsOptions = AzureExtensionsOptions
+        };
     }
 
     /// <summary>
@@ -217,19 +214,19 @@ public static class ChatClient
     private static AzureCognitiveSearchChatExtensionConfiguration GetAzureCognitiveSearchChatExtensionConfiguration()
     {
         return new AzureCognitiveSearchChatExtensionConfiguration
-               {
-                   DocumentCount = DocumentCount,
-                   EmbeddingEndpoint = EmbeddingEndpoint,
-                   EmbeddingKey = OpenAIKey,
-                   FieldMappingOptions = GetFieldMappingOptions(),
-                   IndexName = IndexName,
-                   QueryType = QueryType,
-                   SearchEndpoint = SearchEndpoint,
-                   SearchKey = SearchKey,
-                   ShouldRestrictResultScope = true,
-                   Type = AzureChatExtensionType.AzureCognitiveSearch,
-                   SemanticConfiguration = SemanticConfig
-               };
+        {
+            DocumentCount = DocumentCount,
+            EmbeddingEndpoint = EmbeddingEndpoint,
+            EmbeddingKey = OpenAIKey,
+            FieldMappingOptions = GetFieldMappingOptions(),
+            IndexName = IndexName,
+            QueryType = QueryType,
+            SearchEndpoint = SearchEndpoint,
+            SearchKey = SearchKey,
+            ShouldRestrictResultScope = true,
+            Type = AzureChatExtensionType.AzureCognitiveSearch,
+            SemanticConfiguration = SemanticConfig
+        };
     }
 
     /// <summary>
@@ -239,12 +236,12 @@ public static class ChatClient
     private static AzureCognitiveSearchIndexFieldMappingOptions GetFieldMappingOptions()
     {
         return new AzureCognitiveSearchIndexFieldMappingOptions
-               {
-                   ContentFieldNames = { ContentField },
-                   ContentFieldSeparator = ContentFieldSeparator,
-                   TitleFieldName = TitleField,
-                   UrlFieldName = URLField,
-                   VectorFieldNames = { VectorField }
-               };
+        {
+            ContentFieldNames = { ContentField },
+            ContentFieldSeparator = ContentFieldSeparator,
+            TitleFieldName = TitleField,
+            UrlFieldName = URLField,
+            VectorFieldNames = { VectorField }
+        };
     }
 }

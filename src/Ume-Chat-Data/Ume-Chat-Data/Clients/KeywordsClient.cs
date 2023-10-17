@@ -83,8 +83,7 @@ public class KeywordsClient
     {
         try
         {
-            _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with keywords...",
-                                   documents.Count);
+            _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with keywords...", documents.Count);
 
             var foreignLanguages = GetForeignLanguages(documents);
 
@@ -145,10 +144,9 @@ public class KeywordsClient
     ///     <para>Title = Dictionary where key is Document.URL and value is keywords</para>
     ///     <para>Content = Dictionary where key is Document.ID and value is keywords</para>
     /// </returns>
-    private async Task<Dictionary<string, KeyPhraseCollection>> ExtractKeywordsAsync(
-        List<Document> documents,
-        Dictionary<string, string> foreignLanguages,
-        KeywordsType type)
+    private async Task<Dictionary<string, KeyPhraseCollection>> ExtractKeywordsAsync(List<Document> documents,
+                                                                                     Dictionary<string, string> foreignLanguages,
+                                                                                     KeywordsType type)
     {
         try
         {
@@ -236,22 +234,21 @@ public class KeywordsClient
     /// <param name="foreignLanguages">Dictionary of IDs with foreign language</param>
     /// <param name="type">Type of keywords extraction. Title or Content</param>
     /// <returns>List of TextDocumentInput</returns>
-    private List<TextDocumentInput> ConvertDocumentsToTextDocumentInputs(
-        List<Document> documents,
-        Dictionary<string, string> foreignLanguages,
-        KeywordsType type)
+    private List<TextDocumentInput> ConvertDocumentsToTextDocumentInputs(List<Document> documents,
+                                                                         Dictionary<string, string> foreignLanguages,
+                                                                         KeywordsType type)
     {
         try
         {
             return documents.Select(d =>
-                                    {
-                                        var input = ConvertDocumentToTextDocumentInput(d, type);
+                             {
+                                 var input = ConvertDocumentToTextDocumentInput(d, type);
 
-                                        if (foreignLanguages.ContainsKey(d.ID))
-                                            input.Language = foreignLanguages[d.ID];
+                                 if (foreignLanguages.ContainsKey(d.ID))
+                                     input.Language = foreignLanguages[d.ID];
 
-                                        return input;
-                                    })
+                                 return input;
+                             })
                              // Distinct because Titles are batched by URL since documents with the same URL has the same Title
                             .DistinctBy(x => x.Id)
                             .ToList();
@@ -278,12 +275,12 @@ public class KeywordsClient
         try
         {
             var textDocumentInput = type switch
-                                    {
-                                        // URL because documents with the same URL has the same Title
-                                        KeywordsType.Title => new TextDocumentInput(document.URL, document.Title),
-                                        KeywordsType.Content => new TextDocumentInput(document.ID, document.Content),
-                                        _ => throw new Exception("KeywordsType was incorrect!")
-                                    };
+            {
+                // URL because documents with the same URL has the same Title
+                KeywordsType.Title => new TextDocumentInput(document.URL, document.Title),
+                KeywordsType.Content => new TextDocumentInput(document.ID, document.Content),
+                _ => throw new Exception("KeywordsType was incorrect!")
+            };
             textDocumentInput.Language = DefaultLanguage;
 
             return textDocumentInput;

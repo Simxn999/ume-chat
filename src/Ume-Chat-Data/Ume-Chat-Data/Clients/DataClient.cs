@@ -138,8 +138,7 @@ public class DataClient
         catch (Exception e)
         {
             stopwatch.Stop();
-            _logger.LogError(e,
-                             $"Synchronization failed! {Math.Round(stopwatch.Elapsed.TotalSeconds, 2).ToString(CultureInfo.InvariantCulture)}s");
+            _logger.LogError(e, $"Synchronization failed! {Math.Round(stopwatch.Elapsed.TotalSeconds, 2).ToString(CultureInfo.InvariantCulture)}s");
             throw;
         }
     }
@@ -152,7 +151,7 @@ public class DataClient
         try
         {
             _logger.LogInformation("Initializing data client...");
-            
+
             SitemapClient = await SitemapClient.CreateAsync(_logger);
 
             IsSynchronized = Variables.GetDateTimeOffset("LAST_SYNCHRONIZED") == SitemapClient.LastModified;
@@ -187,16 +186,16 @@ public class DataClient
         try
         {
             return SitemapItems.Where(i =>
-                                      {
-                                          // Retrieve document from database
-                                          var document = Index.FirstOrDefault(d => d.URL == i.URL);
+                                {
+                                    // Retrieve document from database
+                                    var document = Index.FirstOrDefault(d => d.URL == i.URL);
 
-                                          // Sitemap item should be updated if:
-                                          //    Document.URL does not exist in database
-                                          //        OR
-                                          //    Webpage has been updated since it was uploaded to database
-                                          return document is null || document.LastModified < i.LastModified;
-                                      })
+                                    // Sitemap item should be updated if:
+                                    //    Document.URL does not exist in database
+                                    //        OR
+                                    //    Webpage has been updated since it was uploaded to database
+                                    return document is null || document.LastModified < i.LastModified;
+                                })
                                .ToList();
         }
         catch (Exception e)
@@ -213,8 +212,7 @@ public class DataClient
     /// <returns>List of lists of sitemap items</returns>
     private List<List<SitemapItem>> Batch(ICollection<SitemapItem> list)
     {
-        _logger.LogInformation($"Batching {{Count}} sitemap item{Grammar.GetPlurality(list.Count, "", "s")}...",
-                               list.Count);
+        _logger.LogInformation($"Batching {{Count}} sitemap item{Grammar.GetPlurality(list.Count, "", "s")}...", list.Count);
 
         try
         {
@@ -309,8 +307,7 @@ public class DataClient
     {
         try
         {
-            _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with default groups...",
-                                   documents.Count);
+            _logger.LogInformation($"Populating {{Count}} document{Grammar.GetPlurality(documents.Count, "", "s")} with default groups...", documents.Count);
 
             documents.ForEach(d => d.GroupIDs = DefaultGroups);
         }
@@ -365,8 +362,7 @@ public class DataClient
     /// <param name="documents">Documents to delete</param>
     private async Task DeleteDocumentsAsync(ICollection<Document> documents)
     {
-        _logger.LogInformation($"Deleting {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...",
-                               documents.Count);
+        _logger.LogInformation($"Deleting {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...", documents.Count);
 
         try
         {
@@ -388,8 +384,7 @@ public class DataClient
     /// <param name="documents">Documents to upload</param>
     private async Task UploadDocumentsAsync(ICollection<Document> documents)
     {
-        _logger.LogInformation($"Uploading {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...",
-                               documents.Count);
+        _logger.LogInformation($"Uploading {{count}} document{Grammar.GetPlurality(documents.Count, "", "s")}...", documents.Count);
 
         try
         {

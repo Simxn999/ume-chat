@@ -32,7 +32,6 @@ public class AzureKeyVaultReference
 
     public override string ToString()
     {
-        return
-            $"{ConfigValuePrefix}({KeyVaultSecretName}{(string.IsNullOrEmpty(KeyVaultURL) ? "" : $", {KeyVaultURL}")})";
+        return $"{ConfigValuePrefix}({KeyVaultSecretName}{(string.IsNullOrEmpty(KeyVaultURL) ? "" : $", {KeyVaultURL}")})";
     }
 }
