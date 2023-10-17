@@ -30,7 +30,7 @@ public class KeywordsClient
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "Failed creating KeywordsClient!");
+            logger.LogError(e, "Failed creating KeywordsClient!");
             throw;
         }
     }
