@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Utilities", "Ume-Chat-Utilities\Ume-Chat-Utilities.csproj", "{8DA2DB19-4EB9-430C-A7B1-9957404ACBF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-KeyVaultProvider", "Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj", "{F39B335B-832C-48E6-B534-020EE7DDA0F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{8DA2DB19-4EB9-430C-A7B1-9957404ACBF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DA2DB19-4EB9-430C-A7B1-9957404ACBF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DA2DB19-4EB9-430C-A7B1-9957404ACBF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
