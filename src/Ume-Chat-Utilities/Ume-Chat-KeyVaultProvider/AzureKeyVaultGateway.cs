@@ -1,16 +1,12 @@
 ﻿using Azure;
-using Azure.Core;
 using Azure.Security.KeyVault.Secrets;
 
 namespace Ume_Chat_KeyVaultProvider;
 
-internal class AzureKeyVaultGateway(SecretClient secretClient, TokenCredential credential) : IKeyVaultGateway
+internal class AzureKeyVaultGateway(SecretClient secretClient) : IKeyVaultGateway
 {
     public async Task<Response<KeyVaultSecret>> GetSecretAsync(string secretName, string keyVaultUrl)
     {
-        secretClient = new SecretClient(new Uri(keyVaultUrl), credential);
-        var secret = await secretClient.GetSecretAsync(secretName);
-
-        return secret;
+        return await secretClient.GetSecretAsync(secretName);
     }
 }

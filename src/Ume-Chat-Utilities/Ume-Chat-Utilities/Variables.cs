@@ -18,12 +18,10 @@ public static class Variables
     ///     Add variable support to ConfigurationBuilder.
     /// </summary>
     /// <param name="builder">App configuration builder</param>
-    /// <param name="logger">ILogger</param>
     /// <param name="cloud">If Azure App Configuration is used</param>
-    public static void AddVariables(this IConfigurationBuilder builder, ILogger? logger = null, bool cloud = false)
+    public static void AddVariables(this IConfigurationBuilder builder, bool cloud = false)
     {
         _configuration = builder.Build();
-        _logger = logger;
 
         if (!cloud)
             return;
@@ -32,6 +30,15 @@ public static class Variables
         _cloudConfigurationClient = new ConfigurationClient(cloudConnectionString);
     }
 
+    /// <summary>
+    ///     Add a logger to the variables instance.
+    /// </summary>
+    /// <param name="logger">ILogger</param>
+    public static void AddLogger(ILogger logger)
+    {
+        _logger = logger;
+    }
+    
     /// <summary>
     ///     Retrieve environment variable from app configuration.
     /// </summary>

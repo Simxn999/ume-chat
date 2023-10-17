@@ -52,7 +52,7 @@ internal class KeyVaultConfigurationProvider : ConfigurationProvider
         var credential = new DefaultAzureCredential();
         var sc = new SecretClient(new Uri(_azureKeyVaultUrl), credential);
 
-        return new AzureKeyVaultGateway(sc, credential);
+        return new AzureKeyVaultGateway(sc);
     }
 
     private IDictionary<string, AzureKeyVaultReference> FilterKeyVaultReferences()

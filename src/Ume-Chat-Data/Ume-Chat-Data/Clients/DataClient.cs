@@ -151,6 +151,8 @@ public class DataClient
     {
         try
         {
+            _logger.LogInformation("Initializing data client...");
+            
             SitemapClient = await SitemapClient.CreateAsync(_logger);
 
             IsSynchronized = Variables.GetDateTimeOffset("LAST_SYNCHRONIZED") == SitemapClient.LastModified;
