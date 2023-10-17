@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Ume_Chat_Models.Ume_Chat_Data.Ume_Chat;
+namespace Ume_Chat_Models.Ume_Chat_Data.Ume_Chat_Data;
 
 /// <summary>
 ///     Crawled webpage content.

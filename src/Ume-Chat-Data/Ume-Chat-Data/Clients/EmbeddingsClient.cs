@@ -2,7 +2,7 @@
 using Azure;
 using Azure.AI.OpenAI;
 using Microsoft.Extensions.Logging;
-using Ume_Chat_Models.Ume_Chat_Data.Ume_Chat;
+using Ume_Chat_Models.Ume_Chat_Data.Ume_Chat_Data;
 using Ume_Chat_Utilities;
 
 namespace Ume_Chat_Data.Clients;
