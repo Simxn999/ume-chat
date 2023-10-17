@@ -21,13 +21,21 @@ public static class Variables
     /// <param name="cloud">If Azure App Configuration is used</param>
     public static void AddVariables(this IConfigurationBuilder builder, bool cloud = false)
     {
-        _configuration = builder.Build();
+        try
+        {
+            _configuration = builder.Build();
 
-        if (!cloud)
-            return;
+            if (!cloud)
+                return;
 
-        var cloudConnectionString = Get("DATASYNC_APP_CONFIGURATION_CONNECTION_STRING");
-        _cloudConfigurationClient = new ConfigurationClient(cloudConnectionString);
+            var cloudConnectionString = Get("DATASYNC_APP_CONFIGURATION_CONNECTION_STRING");
+            _cloudConfigurationClient = new ConfigurationClient(cloudConnectionString);
+        }
+        catch (Exception e)
+        {
+            Error(e);
+            throw;
+        }
     }
 
     /// <summary>
@@ -36,7 +44,15 @@ public static class Variables
     /// <param name="logger">ILogger</param>
     public static void AddLogger(ILogger logger)
     {
-        _logger = logger;
+        try
+        {
+            _logger = logger;
+        }
+        catch (Exception e)
+        {
+            Error(e);
+            throw;
+        }
     }
 
     /// <summary>
@@ -44,7 +60,6 @@ public static class Variables
     /// </summary>
     /// <param name="key">Variable name</param>
     /// <returns>Variable value as string</returns>
-    /// <exception cref="Exception">Variable not found exception</exception>
     public static string Get(string key)
     {
         try
@@ -65,19 +80,39 @@ public static class Variables
     }
 
     /// <summary>
-    ///     Retrieve environment variable as int from app configuration.
+    ///     Retrieve environment variable enumerable from app configuration.
     /// </summary>
-    /// <param name="key">Variable name</param>
-    /// <returns>Variable value as int</returns>
-    /// <exception cref="Exception">Variable not found exception</exception>
-    public static int GetInt(string key)
+    /// <param name="key">Enumerable name</param>
+    /// <returns>Enumerable from app configuration</returns>
+    public static IEnumerable<string> GetEnumerable(string key)
     {
         try
         {
             ArgumentNullException.ThrowIfNull(_configuration);
 
-            var value = _configuration[key] ?? throw new Exception("Variable not found!");
+            var value = _configuration.GetSection(key).GetChildren().Select(c => c.Value ?? string.Empty).Where(c => !string.IsNullOrEmpty(c));
 
+            ArgumentNullException.ThrowIfNull(value, $"{nameof(_configuration)}[{key}]");
+
+            return value;
+        }
+        catch (Exception e)
+        {
+            Error(e);
+            throw;
+        }
+    }
+
+    /// <summary>
+    ///     Retrieve environment variable as int from app configuration.
+    /// </summary>
+    /// <param name="key">Variable name</param>
+    /// <returns>Variable value as int</returns>
+    public static int GetInt(string key)
+    {
+        try
+        {
+            var value = Get(key);
             return int.Parse(value);
         }
         catch (Exception e)
@@ -92,39 +127,12 @@ public static class Variables
     /// </summary>
     /// <param name="key">Variable name</param>
     /// <returns>Variable value as float</returns>
-    /// <exception cref="Exception">Variable not found exception</exception>
     public static float GetFloat(string key)
     {
         try
         {
-            ArgumentNullException.ThrowIfNull(_configuration);
-
-            var value = _configuration[key] ?? throw new Exception("Variable not found!");
-
+            var value = Get(key);
             return float.Parse(value, CultureInfo.InvariantCulture);
-        }
-        catch (Exception e)
-        {
-            Error(e);
-            throw;
-        }
-    }
-
-    /// <summary>
-    ///     Retrieve environment variable enumerable from app configuration.
-    /// </summary>
-    /// <param name="key">Enumerable name</param>
-    /// <returns>Enumerable from app configuration</returns>
-    /// <exception cref="Exception">Enumerable not found!</exception>
-    public static IEnumerable<string> GetEnumerable(string key)
-    {
-        try
-        {
-            ArgumentNullException.ThrowIfNull(_configuration);
-
-            var output = _configuration.GetSection(key).GetChildren().Select(c => c.Value ?? string.Empty).Where(c => !string.IsNullOrEmpty(c));
-
-            return output ?? throw new Exception("Enumerable not found!");
         }
         catch (Exception e)
         {
@@ -138,15 +146,11 @@ public static class Variables
     /// </summary>
     /// <param name="key">Variable name</param>
     /// <returns>DateTimeOffset from app configuration</returns>
-    /// <exception cref="Exception">Variable not found exception</exception>
     public static DateTimeOffset GetDateTimeOffset(string key)
     {
         try
         {
-            ArgumentNullException.ThrowIfNull(_configuration);
-
-            var value = _configuration[key] ?? throw new Exception("Variable not found!");
-
+            var value = Get(key);
             return DateTimeOffset.Parse(value);
         }
         catch (Exception e)
@@ -161,11 +165,11 @@ public static class Variables
     /// </summary>
     /// <param name="key">Variable name</param>
     /// <param name="value">Variable value</param>
-    /// <exception cref="Exception">Invalid configuration exception</exception>
     public static void Set(string key, string value)
     {
         try
         {
+            ArgumentException.ThrowIfNullOrEmpty(key);
             ArgumentNullException.ThrowIfNull(_configuration);
             ArgumentNullException.ThrowIfNull(_cloudConfigurationClient, nameof(_cloudConfigurationClient));
 
