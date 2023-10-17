@@ -12,7 +12,7 @@ ILogger logger;
 try
 {
     Console.Title = "Data Synchronization";
-    Console.WriteLine("Initializing...");
+    Console.WriteLine("Building application...");
 
     var host = new HostBuilder().ConfigureAppConfiguration((_, builder) =>
                                  {
