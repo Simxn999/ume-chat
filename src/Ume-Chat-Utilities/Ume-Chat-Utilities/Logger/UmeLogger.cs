@@ -26,7 +26,7 @@ public class UmeLogger : ILogger
 
     private static void WriteLog(LogLevel logLevel, string message)
     {
-        var timestamp = DateTime.Now.ToString("hh:mm:ss.fff");
+        var timestamp = DateTime.Now.ToString("HH:mm:ss.fff");
         var logType = GetLogTitle(logLevel);
 
         Console.ForegroundColor = ConsoleColor.DarkGray;
