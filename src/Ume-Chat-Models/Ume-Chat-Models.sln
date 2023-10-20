@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Models", "Ume-Chat-Models.csproj", "{BCA94ED9-ECCC-4B9D-8725-972827078157}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models.csproj", "{BCA94ED9-ECCC-4B9D-8725-972827078157}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

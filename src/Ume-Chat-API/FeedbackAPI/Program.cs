@@ -1,7 +1,7 @@
 using TitleGeneratorGPT;
-using Ume_Chat_API_Feedback;
-using Ume_Chat_KeyVaultProvider;
-using Ume_Chat_Utilities;
+using FeedbackAPI;
+using KeyVaultProvider;
+using Utilities;
 
 var builder = WebApplication.CreateBuilder(args);
 var isDevelopment = builder.Environment.IsDevelopment();

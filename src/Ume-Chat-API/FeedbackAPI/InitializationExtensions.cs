@@ -1,10 +1,10 @@
 ﻿using System.Reflection;
 using Microsoft.EntityFrameworkCore;
-using Ume_Chat_Data_Feedback;
-using Ume_Chat_Data_Feedback.Clients;
-using Ume_Chat_Utilities;
+using FeedbackData;
+using FeedbackData.Clients;
+using Utilities;
 
-namespace Ume_Chat_API_Feedback;
+namespace FeedbackAPI;
 
 /// <summary>
 ///     Feedback API Initialization extensions.
@@ -52,9 +52,6 @@ public static class InitializationExtensions
     public static void InitializeSwagger(this WebApplication app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI(o =>
-        {
-            o.DocumentTitle = "Feedback API";
-        });
+        app.UseSwaggerUI(o => { o.DocumentTitle = "Feedback API"; });
     }
 }

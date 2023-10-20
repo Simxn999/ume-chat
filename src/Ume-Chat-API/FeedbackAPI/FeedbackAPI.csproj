@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>false</InvariantGlobalization>
-        <RootNamespace>Ume_Chat_API_Feedback</RootNamespace>
+        <RootNamespace>FeedbackAPI</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,9 +16,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Ume-Chat-Data\FeedbackData\FeedbackData.csproj" />
-        <ProjectReference Include="..\..\Ume-Chat-Utilities\Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj"/>
-        <ProjectReference Include="..\..\Ume-Chat-Utilities\Ume-Chat-Utilities\Ume-Chat-Utilities.csproj"/>
+        <ProjectReference Include="..\..\Ume-Chat-Data\FeedbackData\FeedbackData.csproj"/>
+        <ProjectReference Include="..\..\Ume-Chat-Utilities\KeyVaultProvider\KeyVaultProvider.csproj"/>
+        <ProjectReference Include="..\..\Ume-Chat-Utilities\Utilities\Utilities.csproj"/>
     </ItemGroup>
 
 </Project>

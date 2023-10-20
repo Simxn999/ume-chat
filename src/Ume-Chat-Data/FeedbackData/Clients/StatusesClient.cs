@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Ume_Chat_Models.Data.FeedbackData;
+using Models.Data.FeedbackData;
 
-namespace Ume_Chat_Data_Feedback.Clients;
+namespace FeedbackData.Clients;
 
 /// <summary>
 ///     Client handling statuses in database.

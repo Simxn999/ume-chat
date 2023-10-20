@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Ume_Chat_Data_Feedback.Clients;
-using Ume_Chat_Data_Feedback.Data_Transfer;
-using Ume_Chat_Models.Data.FeedbackData;
+using FeedbackData.Clients;
+using FeedbackData.DataTransfer;
+using Models.Data.FeedbackData;
 
-namespace Ume_Chat_API_Feedback.Controllers;
+namespace FeedbackAPI.Controllers;
 
 /// <summary>
 ///     Feedback submissions endpoints.

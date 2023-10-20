@@ -2,13 +2,13 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-        <RootNamespace>Ume_Chat_Data_Feedback</RootNamespace>
+        <RootNamespace>FeedbackData</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\Ume-Chat-Models\Ume-Chat-Models.csproj"/>
+        <ProjectReference Include="..\..\Ume-Chat-Models\Models.csproj"/>
         <ProjectReference Include="..\..\Ume-Chat-Utilities\TitleGeneratorGPT\TitleGeneratorGPT.csproj"/>
     </ItemGroup>
 

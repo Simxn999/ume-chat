@@ -1,6 +1,6 @@
 ﻿using Azure;
 using Azure.AI.OpenAI;
-using Ume_Chat_Utilities;
+using Utilities;
 
 namespace TitleGeneratorGPT;
 
@@ -13,22 +13,22 @@ public static class TitleGenerator
     ///     Client handling Azure OpenAI.
     /// </summary>
     private static OpenAIClient? Client { get; set; }
-    
+
     /// <summary>
     ///     Azure OpenAI GPT Deployment name.
     /// </summary>
     private static string? GPTDeployment { get; set; }
-    
+
     /// <summary>
     ///     System message, title generation instructions.
     /// </summary>
     private static string? RoleInformation { get; set; }
-    
+
     /// <summary>
     ///     If Title Generator is initialized or not.
     /// </summary>
     private static bool IsInitialized { get; set; }
-    
+
     /// <summary>
     ///     Initialize Title Generator.
     /// </summary>
@@ -42,7 +42,7 @@ public static class TitleGenerator
 
         IsInitialized = true;
     }
-    
+
     /// <summary>
     ///     Generate Title based on given content.
     /// </summary>
@@ -64,11 +64,7 @@ public static class TitleGenerator
     /// <returns>Enumerable of ChatMessages used by GPT to generate title</returns>
     private static IEnumerable<ChatMessage> GetMessages(string content)
     {
-        return new[]
-        {
-            new ChatMessage(ChatRole.System, RoleInformation),
-            new ChatMessage(ChatRole.User, content)
-        };
+        return new[] { new ChatMessage(ChatRole.System, RoleInformation), new ChatMessage(ChatRole.User, content) };
     }
 
     /// <summary>
@@ -79,7 +75,7 @@ public static class TitleGenerator
     private static async Task<string> GetChatResponse(IEnumerable<ChatMessage> messages)
     {
         ArgumentNullException.ThrowIfNull(Client);
-        
+
         var response = await Client.GetChatCompletionsAsync(GPTDeployment, new ChatCompletionsOptions(messages));
         return response.Value.Choices[0].Message.Content;
     }

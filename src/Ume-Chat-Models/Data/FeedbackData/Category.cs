@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Ume_Chat_Models.Data.FeedbackData;
+namespace Models.Data.FeedbackData;
 
 public class Category
 {

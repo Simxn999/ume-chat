@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Ume_Chat_Data_Feedback.Data_Transfer;
-using Ume_Chat_Models.Data.FeedbackData;
+using FeedbackData.DataTransfer;
+using Models.Data.FeedbackData;
 
-namespace Ume_Chat_Data_Feedback.Clients;
+namespace FeedbackData.Clients;
 
 /// <summary>
 ///     Client handling feedback submissions in database.

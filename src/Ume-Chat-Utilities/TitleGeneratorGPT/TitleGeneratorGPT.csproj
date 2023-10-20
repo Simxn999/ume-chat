@@ -8,23 +8,23 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.8" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
+        <PackageReference Include="Azure.AI.OpenAI" Version="1.0.0-beta.8"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Ume-Chat-Utilities\Ume-Chat-Utilities.csproj" />
+        <ProjectReference Include="..\Utilities\Utilities.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <None Remove="appsettings.json" />
-      <EmbeddedResource Include="appsettings.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
-      <None Remove="appsettings.Development.json" />
-      <EmbeddedResource Include="appsettings.Development.json">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </EmbeddedResource>
+        <None Remove="appsettings.json"/>
+        <EmbeddedResource Include="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <None Remove="appsettings.Development.json"/>
+        <EmbeddedResource Include="appsettings.Development.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>

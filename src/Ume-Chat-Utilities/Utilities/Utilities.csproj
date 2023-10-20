@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Utilities</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>preview</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Data.AppConfiguration" Version="1.2.1"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0"/>
+        <PackageReference Include="Microsoft.Extensions.Logging" Version="7.0.0"/>
+    </ItemGroup>
+
+</Project>

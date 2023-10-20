@@ -1,8 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Ume_Chat_Models.Data.FeedbackData;
-using Ume_Chat_Utilities;
+using Models.Data.FeedbackData;
+using Utilities;
 
-namespace Ume_Chat_Data_Feedback;
+namespace FeedbackData;
 
 public class FeedbackContext : DbContext
 {

@@ -18,19 +18,18 @@ public static class TitleGeneratorConfigurationExtension
         var assembly = Assembly.GetAssembly(typeof(TitleGenerator));
         var assemblyName = assembly?.GetName().Name;
         ArgumentNullException.ThrowIfNull(assembly);
-        
+
         var stream = assembly.GetManifestResourceStream($"{assemblyName}.appsettings.json");
         ArgumentNullException.ThrowIfNull(stream);
 
         builder.AddJsonStream(stream);
-        
+
         if (!isDevelopment)
             return;
-        
+
         stream = assembly.GetManifestResourceStream($"{assemblyName}.appsettings.Development.json");
         ArgumentNullException.ThrowIfNull(stream);
 
         builder.AddJsonStream(stream);
     }
 }
-
