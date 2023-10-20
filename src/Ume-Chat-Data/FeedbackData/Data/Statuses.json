@@ -1,0 +1,22 @@
+﻿[
+  {
+    "id": 1,
+    "title": "Pending"
+  },
+  {
+    "id": 2,
+    "title": "In Progress"
+  },
+  {
+    "id": 3,
+    "title": "On Hold"
+  },
+  {
+    "id": 4,
+    "title": "Resolved"
+  },
+  {
+    "id": 5,
+    "title": "Closed"
+  }
+]
