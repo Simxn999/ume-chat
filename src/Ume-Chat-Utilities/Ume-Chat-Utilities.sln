@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-Utilities", "Ume-C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ume-Chat-KeyVaultProvider", "Ume-Chat-KeyVaultProvider\Ume-Chat-KeyVaultProvider.csproj", "{F39B335B-832C-48E6-B534-020EE7DDA0F2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TitleGeneratorGPT", "TitleGeneratorGPT\TitleGeneratorGPT.csproj", "{8D9EA44B-D0C0-43F4-B57B-6A92A2D94D3F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F39B335B-832C-48E6-B534-020EE7DDA0F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D9EA44B-D0C0-43F4-B57B-6A92A2D94D3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D9EA44B-D0C0-43F4-B57B-6A92A2D94D3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D9EA44B-D0C0-43F4-B57B-6A92A2D94D3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D9EA44B-D0C0-43F4-B57B-6A92A2D94D3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
