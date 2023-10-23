@@ -6,15 +6,15 @@ namespace Models.API.ChatAPI;
 /// <summary>
 ///     API Response.
 /// </summary>
-[DebuggerDisplay("{Message} - {Citations?.Count ?? 0} Citations")]
+[DebuggerDisplay("{Content} - {Citations?.Count ?? 0} Citations")]
 public class ChatResponse
 {
     /// <summary>
-    ///     Response message aka chatbot answer.
+    ///     Response message content aka chatbot answer.
     /// </summary>
-    [JsonPropertyName("message")]
+    [JsonPropertyName("content")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? Message { get; set; }
+    public string? Content { get; set; }
 
     /// <summary>
     ///     Citations used by chatbot.

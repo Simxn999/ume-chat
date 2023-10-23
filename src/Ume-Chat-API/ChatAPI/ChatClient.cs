@@ -159,7 +159,7 @@ public static class ChatClient
             // new ChatMessage(ChatRole.User, $"Dagens datum är {date.ToString("D", cultureInfo)} och klockan är just nu {date:t}.") // TODO: Should be in system message!
         };
 
-        messages.AddRange(requestMessages.Select(m => new ChatMessage(GetChatRole(m.Role), m.Message)));
+        messages.AddRange(requestMessages.Select(m => new ChatMessage(GetChatRole(m.Role), m.Content)));
 
         return messages;
     }

@@ -9,7 +9,7 @@ namespace Models.API.ChatAPI;
 /// <param name="documentNumber">Citation identifier - [docN]</param>
 /// <param name="title">Title of citation</param>
 /// <param name="url">URL of citation</param>
-[DebuggerDisplay("{DocumentID} - {Title}")]
+[DebuggerDisplay("{TextID} - {Title}")]
 public class Citation(int documentNumber, string title, string url)
 {
     /// <summary>
@@ -17,15 +17,15 @@ public class Citation(int documentNumber, string title, string url)
     ///     <para> -1: Citation has not been numbered </para>
     ///     <para> >= 1: Occurrence number of citation in message </para>
     /// </summary>
-    [JsonPropertyName("citationNumber")]
+    [JsonPropertyName("citation_number")]
     public int CitationNumber { get; set; } = -1;
 
     /// <summary>
-    ///     <para>Document identifier used by chatbot.</para>
+    ///     <para>Document text identifier used by chatbot.</para>
     ///     <para>Example: [doc1], [doc2]</para>
     /// </summary>
-    [JsonPropertyName("documentID")]
-    public string DocumentID { get; init; } = $"[doc{documentNumber}]";
+    [JsonPropertyName("text_id")]
+    public string TextID { get; init; } = $"[doc{documentNumber}]";
 
     /// <summary>
     ///     Title of citation.

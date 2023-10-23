@@ -21,7 +21,7 @@ public partial class ChatResponseExtended : ChatResponse
         if (chatMessage is null)
             return;
 
-        Message = GetMessage(chatMessage);
+        Content = GetMessage(chatMessage);
         Citations = GetCitations(chatMessage);
     }
 
@@ -68,7 +68,7 @@ public partial class ChatResponseExtended : ChatResponse
     /// </summary>
     private void RemoveUnusedCitations()
     {
-        Citations?.RemoveAll(c => !Message?.Contains(c.DocumentID) ?? true);
+        Citations?.RemoveAll(c => !Content?.Contains(c.TextID) ?? true);
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ public partial class ChatResponseExtended : ChatResponse
     /// </summary>
     private void CombineDuplicateDocumentIDs()
     {
-        if (Citations is null || Message is null)
+        if (Citations is null || Content is null)
             return;
 
         for (var i = Citations.Count - 1; i >= 0; i--)
@@ -90,11 +90,11 @@ public partial class ChatResponseExtended : ChatResponse
             // Retrieve the first duplicate occurrence
             var firstOccuringDuplicate = Citations.FirstOrDefault(c => c.URL == citation.URL);
 
-            if (firstOccuringDuplicate is null || firstOccuringDuplicate.DocumentID == citation.DocumentID)
+            if (firstOccuringDuplicate is null || firstOccuringDuplicate.TextID == citation.TextID)
                 continue;
 
             // Replace current citation document ID with the first occuring duplicate document ID
-            Message = Message.Replace(citation.DocumentID, firstOccuringDuplicate.DocumentID);
+            Content = Content.Replace(citation.TextID, firstOccuringDuplicate.TextID);
 
             // Remove current citation from list
             Citations.RemoveAt(i);
@@ -106,11 +106,11 @@ public partial class ChatResponseExtended : ChatResponse
     /// </summary>
     private void RemoveDuplicateCitationsInMessage()
     {
-        if (Message is null)
+        if (Content is null)
             return;
 
-        Message = DocumentIDClusterRegex()
-           .Replace(Message,
+        Content = DocumentIDClusterRegex()
+           .Replace(Content,
                     m =>
                     {
                         var seen = new HashSet<string>();
@@ -127,11 +127,11 @@ public partial class ChatResponseExtended : ChatResponse
             return;
 
         // Retrieve all document IDs that occur in the message
-        var matches = DocumentIDRegex().Matches(Message ?? string.Empty).DistinctBy(m => m.Value).ToList();
+        var matches = DocumentIDRegex().Matches(Content ?? string.Empty).DistinctBy(m => m.Value).ToList();
 
         for (var i = 0; i < matches.Count; i++)
         {
-            var citation = Citations.FirstOrDefault(c => c.DocumentID == matches[i].Value);
+            var citation = Citations.FirstOrDefault(c => c.TextID == matches[i].Value);
 
             if (citation is null)
                 continue;

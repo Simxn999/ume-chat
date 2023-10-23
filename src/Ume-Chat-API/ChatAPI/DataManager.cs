@@ -78,8 +78,8 @@ public static class DataManager
             if (chunkChatResponse.Citations is not null)
                 completeChatResponse.Citations = chunkChatResponse.Citations;
 
-            if (chunkChatResponse.Message is not null)
-                completeChatResponse.Message += chunkChatResponse.Message;
+            if (chunkChatResponse.Content is not null)
+                completeChatResponse.Content += chunkChatResponse.Content;
         }
 
         // Indicate end of stream
@@ -103,7 +103,7 @@ public static class DataManager
     {
         var chatResponse = new ChatResponseExtended(chunk);
 
-        if (chatResponse.Message is null && chatResponse.Citations is null)
+        if (chatResponse.Content is null && chatResponse.Citations is null)
             return chatResponse;
 
         await WriteObjectToStreamAsync(chatResponse, writer, jsonOptions);

@@ -6,7 +6,7 @@ namespace Models.API.ChatAPI;
 /// <summary>
 ///     API Request body.
 /// </summary>
-[DebuggerDisplay("{Role}: {Message}")]
+[DebuggerDisplay("{Role}: {Content}")]
 public class RequestMessage
 {
     /// <summary>
@@ -19,6 +19,6 @@ public class RequestMessage
     /// <summary>
     ///     Content of message.
     /// </summary>
-    [JsonPropertyName("message")]
-    public string Message { get; init; } = string.Empty;
+    [JsonPropertyName("content")]
+    public string Content { get; init; } = string.Empty;
 }
